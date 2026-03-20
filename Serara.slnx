@@ -4,5 +4,8 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
   </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Serara.Files/Serara.Files.csproj" />
+  </Folder>
   <Project Path="src/Serara.Core/Serara.Core.csproj" />
 </Solution>
