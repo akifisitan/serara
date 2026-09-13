@@ -7,6 +7,7 @@
   <Folder Name="/src/">
     <Project Path="src/Serara.Files/Serara.Files.csproj" />
     <Project Path="src/Serara.History/Serara.History.csproj" />
+    <Project Path="src/Serara.Tui/Serara.Tui.csproj" />
   </Folder>
   <Project Path="src/Serara.Core/Serara.Core.csproj" />
 </Solution>
