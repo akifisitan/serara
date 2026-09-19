@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Vaerktojer.Spectre.Console" />
+    <PackageReference Include="ZLogger" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Serara.Core\Serara.Core.csproj" />
+    <ProjectReference Include="..\Serara.Files\Serara.Files.csproj" />
+    <ProjectReference Include="..\Serara.History\Serara.History.csproj" />
+    <ProjectReference Include="..\Serara.Search\Serara.Search.csproj" />
+    <ProjectReference Include="..\Serara.Tui\Serara.Tui.csproj" />
+  </ItemGroup>
+</Project>

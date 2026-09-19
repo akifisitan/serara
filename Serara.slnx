@@ -5,6 +5,7 @@
     <File Path="Directory.Packages.props" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Serara.Console/Serara.Console.csproj" />
     <Project Path="src/Serara.Files/Serara.Files.csproj" />
     <Project Path="src/Serara.History/Serara.History.csproj" />
     <Project Path="src/Serara.Infra.Confluence/Serara.Infra.Confluence.csproj" />
