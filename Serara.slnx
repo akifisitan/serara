@@ -10,6 +10,7 @@
     <Project Path="src/Serara.History/Serara.History.csproj" />
     <Project Path="src/Serara.Infra.Confluence/Serara.Infra.Confluence.csproj" />
     <Project Path="src/Serara.Module.WinServer.Confluence/Serara.Module.WinServer.Confluence.csproj" />
+    <Project Path="src/Serara.Module.WinServer.Console/Serara.Module.WinServer.Console.csproj" />
     <Project Path="src/Serara.Module.WinServer/Serara.Module.WinServer.csproj" />
     <Project Path="src/Serara.Search/Serara.Search.csproj" />
     <Project Path="src/Serara.Tui/Serara.Tui.csproj" />
