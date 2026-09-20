@@ -7,18 +7,12 @@ public sealed class ConfluenceHttpClientFactory : IDisposable
 {
     private HttpClient? _cachedHttpClient;
 
-    private static readonly SocketsHttpHandler _httpHandler = new()
-    {
-        PooledConnectionLifetime = TimeSpan.FromMinutes(5),
-        PooledConnectionIdleTimeout = TimeSpan.FromMinutes(2),
-        SslOptions = new() { RemoteCertificateValidationCallback = (_, _, _, _) => true },
-    };
+    private string? _cachedKvp;
+    private AuthenticationHeaderValue? _authenticationHeader;
 
-    private static string? _cachedKvp;
-    private static AuthenticationHeaderValue _authenticationHeader = null!;
-
+    private readonly SocketsHttpHandler _httpHandler;
     private readonly IConfluenceUserCredentialProvider _confluenceUserCredentialProvider;
-    private readonly ConfluenceHttpClientFactoryOptions _options;
+    private readonly IOptions<ConfluenceHttpClientFactoryOptions> _options;
 
     public ConfluenceHttpClientFactory(
         IConfluenceUserCredentialProvider confluenceUserCredentialProvider,
@@ -26,7 +20,20 @@ public sealed class ConfluenceHttpClientFactory : IDisposable
     )
     {
         _confluenceUserCredentialProvider = confluenceUserCredentialProvider;
-        _options = options.Value;
+        _options = options;
+        _httpHandler = new()
+        {
+            PooledConnectionLifetime = TimeSpan.FromMinutes(5),
+            PooledConnectionIdleTimeout = TimeSpan.FromMinutes(2),
+        };
+
+        if (_options.Value.DisableSslValidation)
+        {
+            _httpHandler.SslOptions = new()
+            {
+                RemoteCertificateValidationCallback = (_, _, _, _) => true,
+            };
+        }
     }
 
     public HttpClient CreateClient()
@@ -34,13 +41,14 @@ public sealed class ConfluenceHttpClientFactory : IDisposable
         if (_cachedHttpClient is not null)
         {
             _cachedHttpClient.DefaultRequestHeaders.Authorization = GetAuthenticationHeaderValue();
+
             return _cachedHttpClient;
         }
 
         _cachedHttpClient = new HttpClient(_httpHandler, disposeHandler: false)
         {
-            BaseAddress = new Uri(_options.BaseUrl),
-            Timeout = TimeSpan.FromMilliseconds(_options.TimeoutMs),
+            BaseAddress = new Uri(_options.Value.BaseUrl),
+            Timeout = TimeSpan.FromMilliseconds(_options.Value.TimeoutMs),
         };
 
         _cachedHttpClient.DefaultRequestHeaders.Authorization = GetAuthenticationHeaderValue();
@@ -56,7 +64,7 @@ public sealed class ConfluenceHttpClientFactory : IDisposable
 
         if (_cachedKvp == kvp)
         {
-            return _authenticationHeader;
+            return _authenticationHeader!;
         }
 
         _cachedKvp = kvp;

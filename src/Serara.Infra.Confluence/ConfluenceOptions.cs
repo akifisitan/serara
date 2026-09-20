@@ -10,6 +10,7 @@ public sealed record ConfluenceHttpClientFactoryOptions
 {
     public required string BaseUrl { get; set; }
     public required int TimeoutMs { get; set; }
+    public bool DisableSslValidation { get; set; }
 }
 
 public sealed class ConfluenceHttpClientFactoryOptionsValidator
