@@ -21,7 +21,7 @@ internal sealed class FileExplorerView : IView
 
         serviceProvider.GetRequiredService<ViewContext>().ViewId = Id;
 
-        var console = serviceProvider.GetRequiredService<MultiViewConsole>();
+        var console = serviceProvider.GetRequiredService<IMultiViewConsole>();
         var consoleInput = serviceProvider.GetRequiredService<IConsoleInput>();
         var actions = serviceProvider.GetServices<IInteractiveAction>().ToList();
         var action = await consoleInput

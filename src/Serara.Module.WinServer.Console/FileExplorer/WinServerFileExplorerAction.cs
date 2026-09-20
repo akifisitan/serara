@@ -7,12 +7,12 @@ namespace Serara.Module.WinServer.Console;
 
 internal sealed class WinServerFileExplorerAction : IInteractiveAction
 {
-    private readonly MultiViewConsole _console;
+    private readonly IMultiViewConsole _console;
     private readonly RetrieveFileExplorerOptionsStateMachine _stateMachine;
     private readonly ILogger<WinServerFileExplorerAction> _logger;
 
     public WinServerFileExplorerAction(
-        MultiViewConsole console,
+        IMultiViewConsole console,
         RetrieveFileExplorerOptionsStateMachine stateMachine,
         ILogger<WinServerFileExplorerAction> logger
     )

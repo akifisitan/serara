@@ -54,7 +54,7 @@ internal sealed class MainView : IView
         _viewManager.RegisterView(FileExplorerView.Id);
         var fileExplorerViewTask = _fileExplorerView.Start(viewCancellationTokenSource.Token);
 
-        var console = serviceProvider.GetRequiredService<MultiViewConsole>();
+        var console = serviceProvider.GetRequiredService<IMultiViewConsole>();
         var consoleInput = serviceProvider.GetRequiredService<IConsoleInput>();
         var searchWorkflows = serviceProvider.GetServices<ISearchWorkflow>().ToList();
         var historyStore = serviceProvider.GetService<ISearchHistoryStore>();
@@ -148,7 +148,7 @@ internal sealed class MainView : IView
     }
 
     private static async Task HandleUnavailableHistory(
-        MultiViewConsole console,
+        IMultiViewConsole console,
         IConsoleInput consoleInput,
         ISearchHistoryStore historyStore,
         IReadOnlyList<ISearchWorkflow> workflows,
@@ -191,7 +191,7 @@ internal sealed class MainView : IView
     }
 
     private async Task StartSearchRun(
-        MultiViewConsole console,
+        IMultiViewConsole console,
         SearchWorkflowSelection searchOptions
     )
     {

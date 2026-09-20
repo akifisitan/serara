@@ -1,6 +1,17 @@
 namespace Serara.Tui;
 
-public sealed class MultiViewConsole
+public interface IMultiViewConsole : IConsole
+{
+    Task<PromptResultRecord<T>> Prompt<T>(
+        Func<InternalPromptResultRecord<T>> promptFunc,
+        CancellationToken cancellationToken
+    )
+        where T : notnull;
+    Task<CustomPromptEventResult<T>> ReadPromptEvent<T>(CancellationToken cancellationToken)
+        where T : ICustomPromptEvent;
+}
+
+internal sealed class MultiViewConsole : IMultiViewConsole
 {
     private readonly IViewManager _viewManager;
     private readonly IViewContext _viewContext;

@@ -6,9 +6,9 @@ internal sealed class GetPasswordCredentialStep
     : BuilderStateMachineStep<CredentialProviderStateMachineState, Unit>
 {
     private readonly WinServerConsoleInput _consoleInput;
-    private readonly MultiViewConsole _console;
+    private readonly IMultiViewConsole _console;
 
-    public GetPasswordCredentialStep(WinServerConsoleInput consoleInput, MultiViewConsole console)
+    public GetPasswordCredentialStep(WinServerConsoleInput consoleInput, IMultiViewConsole console)
     {
         _consoleInput = consoleInput;
         _console = console;

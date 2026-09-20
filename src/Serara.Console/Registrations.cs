@@ -62,7 +62,6 @@ public static class Registrations
         ));
 
         services.AddScoped<SearchRunOrchestrator>();
-        services.AddScoped<MultiViewConsole>();
         services.AddScoped<SearchRun>();
         services.AddScoped<ViewContext>();
         services.AddScoped<IViewContext>(sp => sp.GetRequiredService<ViewContext>());

@@ -25,7 +25,7 @@ internal sealed class SearchRunView : IView
 
             serviceProvider.GetRequiredService<ViewContext>().ViewId = Id;
 
-            var console = serviceProvider.GetRequiredService<MultiViewConsole>();
+            var console = serviceProvider.GetRequiredService<IMultiViewConsole>();
 
             var searchOptionsMessage = await _viewManager
                 .ReadMessageFromView<SearchOptionsMessage>(Id, cancellationToken)

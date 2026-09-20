@@ -9,14 +9,14 @@ internal sealed class SearchRunOrchestrator
     private readonly ILogger<SearchRunOrchestrator> _logger;
     private readonly SearchRun _searchRun;
     private readonly ITimeProvider _timeProvider;
-    private readonly MultiViewConsole _console;
+    private readonly IMultiViewConsole _console;
     private readonly SearchResultsChannel _resultsChannel;
 
     public SearchRunOrchestrator(
         ILogger<SearchRunOrchestrator> logger,
         SearchRun searchRun,
         ITimeProvider timeProvider,
-        MultiViewConsole console,
+        IMultiViewConsole console,
         SearchResultsChannel resultsChannel
     )
     {

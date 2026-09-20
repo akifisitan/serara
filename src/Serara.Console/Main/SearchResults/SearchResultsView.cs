@@ -37,7 +37,7 @@ internal sealed class SearchResultsView : IView
         serviceProvider.GetRequiredService<ViewContext>().ViewId = Id;
 
         var consoleInput = serviceProvider.GetRequiredService<IConsoleInput>();
-        var console = serviceProvider.GetRequiredService<MultiViewConsole>();
+        var console = serviceProvider.GetRequiredService<IMultiViewConsole>();
 
         _viewManager.RegisterView(OpenLogFileView.Id);
 

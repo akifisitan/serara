@@ -6,12 +6,12 @@ namespace Serara.Console;
 
 internal sealed class ConsoleInput : IConsoleInput
 {
-    private readonly MultiViewConsole _console;
+    private readonly IMultiViewConsole _console;
     private readonly IPromptAdapter _promptAdapter;
     private readonly KeyBindingSet _bindings;
 
     public ConsoleInput(
-        MultiViewConsole console,
+        IMultiViewConsole console,
         IPromptAdapter promptAdapter,
         KeyBindingSet bindings
     )

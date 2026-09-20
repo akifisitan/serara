@@ -9,6 +9,9 @@ public static class Registrations
     {
         services.TryAddSingleton<ViewManager>();
         services.TryAddSingleton<IViewManager>(sp => sp.GetRequiredService<ViewManager>());
+        services.TryAddScoped<MultiViewConsole>();
+        services.TryAddScoped<IConsole>(sp => sp.GetRequiredService<MultiViewConsole>());
+        services.TryAddScoped<IMultiViewConsole>(sp => sp.GetRequiredService<MultiViewConsole>());
 
         return services;
     }

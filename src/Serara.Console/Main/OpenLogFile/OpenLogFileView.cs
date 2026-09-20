@@ -33,7 +33,7 @@ internal sealed class OpenLogFileView : IView
 
         serviceProvider.GetRequiredService<ViewContext>().ViewId = Id;
 
-        var console = serviceProvider.GetRequiredService<MultiViewConsole>();
+        var console = serviceProvider.GetRequiredService<IMultiViewConsole>();
         var backendRegistry = serviceProvider.GetRequiredService<ISearchBackendRegistry>();
 
         console.WriteLine($"[{Colors.Title}]Extraction Logs[/]");
@@ -69,7 +69,7 @@ internal sealed class OpenLogFileView : IView
     }
 
     private async Task<string?> OpenResultInFileEditor(
-        MultiViewConsole console,
+        IMultiViewConsole console,
         ISearchBackendRegistry backendRegistry,
         ModuleSearchResult result,
         CancellationToken cancellationToken

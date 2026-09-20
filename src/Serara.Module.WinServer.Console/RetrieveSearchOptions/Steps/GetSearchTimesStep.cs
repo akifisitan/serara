@@ -6,9 +6,9 @@ internal sealed class GetSearchTimesStep
     : BuilderStateMachineStep<RetrieveSearchRunOptionsStateMachineRecord, Unit>
 {
     private readonly WinServerConsoleInput _consoleInput;
-    private readonly MultiViewConsole _console;
+    private readonly IMultiViewConsole _console;
 
-    public GetSearchTimesStep(WinServerConsoleInput consoleInput, MultiViewConsole console)
+    public GetSearchTimesStep(WinServerConsoleInput consoleInput, IMultiViewConsole console)
     {
         _consoleInput = consoleInput;
         _console = console;

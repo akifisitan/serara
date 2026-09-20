@@ -7,12 +7,12 @@ internal sealed class MetadataProvider
 {
     private readonly ILogger<MetadataProvider> _logger;
     private readonly WinApplicationMetadataProvider _metadataService;
-    private readonly MultiViewConsole _console;
+    private readonly IMultiViewConsole _console;
 
     public MetadataProvider(
         ILogger<MetadataProvider> logger,
         WinApplicationMetadataProvider metadataService,
-        MultiViewConsole console
+        IMultiViewConsole console
     )
     {
         _logger = logger;

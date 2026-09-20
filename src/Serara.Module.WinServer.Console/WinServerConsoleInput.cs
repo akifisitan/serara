@@ -6,14 +6,14 @@ namespace Serara.Module.WinServer.Console;
 
 internal sealed class WinServerConsoleInput
 {
-    private readonly MultiViewConsole _console;
+    private readonly IMultiViewConsole _console;
     private readonly IPromptAdapter _promptAdapter;
     private readonly WinServerSearchRequestPreparation _requestPreparation;
 
     private const string titleColor = Colors.DarkSeaGreen;
 
     public WinServerConsoleInput(
-        MultiViewConsole console,
+        IMultiViewConsole console,
         IPromptAdapter promptAdapter,
         WinServerSearchRequestPreparation requestPreparation
     )

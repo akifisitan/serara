@@ -8,12 +8,12 @@ internal sealed class AcceptAndStartStep
     : BuilderStateMachineStep<RetrieveSearchRunOptionsStateMachineRecord, SearchRequestResolution>
 {
     private readonly IConsoleInput _consoleInput;
-    private readonly MultiViewConsole _console;
+    private readonly IMultiViewConsole _console;
     private readonly WinServerSearchRequestPreparation _requestPreparation;
 
     public AcceptAndStartStep(
         IConsoleInput consoleInput,
-        MultiViewConsole console,
+        IMultiViewConsole console,
         WinServerSearchRequestPreparation requestPreparation
     )
     {

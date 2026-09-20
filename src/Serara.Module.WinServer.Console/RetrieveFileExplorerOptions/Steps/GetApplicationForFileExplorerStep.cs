@@ -6,12 +6,12 @@ internal sealed class GetApplicationForFileExplorerStep
     : BuilderStateMachineStep<RetrieveFileExplorerOptionsStateMachineState, Unit>
 {
     private readonly WinServerConsoleInput _consoleInput;
-    private readonly MultiViewConsole _console;
+    private readonly IMultiViewConsole _console;
     private readonly MetadataProvider _metadataProvider;
 
     public GetApplicationForFileExplorerStep(
         WinServerConsoleInput consoleInput,
-        MultiViewConsole console,
+        IMultiViewConsole console,
         MetadataProvider metadataProvider
     )
     {

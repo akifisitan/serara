@@ -19,13 +19,13 @@ internal sealed class SearchRun : ISearchRun
     private readonly ILogger<SearchRun> _logger;
     private readonly ISearchRunService _searchRunService;
     private readonly SearchResultsChannel _results;
-    private readonly MultiViewConsole _console;
+    private readonly IMultiViewConsole _console;
 
     public SearchRun(
         ILogger<SearchRun> logger,
         ISearchRunService searchRunService,
         SearchResultsChannel results,
-        MultiViewConsole console
+        IMultiViewConsole console
     )
     {
         _logger = logger;

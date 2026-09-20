@@ -23,7 +23,7 @@ internal sealed class HelpView : IView
 
         serviceProvider.GetRequiredService<ViewContext>().ViewId = Id;
 
-        var console = serviceProvider.GetRequiredService<MultiViewConsole>();
+        var console = serviceProvider.GetRequiredService<IMultiViewConsole>();
 
         console.WriteLine(
             $"""
