@@ -3,82 +3,40 @@ using System.Text;
 
 namespace Serara.Infra.Confluence;
 
-public sealed class ConfluenceHttpClientFactory : IDisposable
+public interface IConfluenceHttpClientFactory
 {
-    private HttpClient? _cachedHttpClient;
+    HttpClient CreateClient();
+}
 
-    private string? _cachedKvp;
-    private AuthenticationHeaderValue? _authenticationHeader;
+internal sealed class ConfluenceHttpClientFactory : IConfluenceHttpClientFactory
+{
+    public const string ClientName = "Confluence";
 
-    private readonly SocketsHttpHandler _httpHandler;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly IConfluenceUserCredentialProvider _confluenceUserCredentialProvider;
-    private readonly IOptions<ConfluenceHttpClientFactoryOptions> _options;
 
     public ConfluenceHttpClientFactory(
-        IConfluenceUserCredentialProvider confluenceUserCredentialProvider,
-        IOptions<ConfluenceHttpClientFactoryOptions> options
+        IHttpClientFactory httpClientFactory,
+        IConfluenceUserCredentialProvider confluenceUserCredentialProvider
     )
     {
+        _httpClientFactory = httpClientFactory;
         _confluenceUserCredentialProvider = confluenceUserCredentialProvider;
-        _options = options;
-        _httpHandler = new()
-        {
-            PooledConnectionLifetime = TimeSpan.FromMinutes(5),
-            PooledConnectionIdleTimeout = TimeSpan.FromMinutes(2),
-        };
-
-        if (_options.Value.DisableSslValidation)
-        {
-            _httpHandler.SslOptions = new()
-            {
-                RemoteCertificateValidationCallback = (_, _, _, _) => true,
-            };
-        }
     }
 
     public HttpClient CreateClient()
     {
-        if (_cachedHttpClient is not null)
-        {
-            _cachedHttpClient.DefaultRequestHeaders.Authorization = GetAuthenticationHeaderValue();
-
-            return _cachedHttpClient;
-        }
-
-        _cachedHttpClient = new HttpClient(_httpHandler, disposeHandler: false)
-        {
-            BaseAddress = new Uri(_options.Value.BaseUrl),
-            Timeout = TimeSpan.FromMilliseconds(_options.Value.TimeoutMs),
-        };
-
-        _cachedHttpClient.DefaultRequestHeaders.Authorization = GetAuthenticationHeaderValue();
-
-        return _cachedHttpClient;
-    }
-
-    private AuthenticationHeaderValue GetAuthenticationHeaderValue()
-    {
-        var userCredentials = _confluenceUserCredentialProvider.Get();
-
-        var kvp = $"{userCredentials.Username}:{userCredentials.Password}";
-
-        if (_cachedKvp == kvp)
-        {
-            return _authenticationHeader!;
-        }
-
-        _cachedKvp = kvp;
-        _authenticationHeader = new(
-            "Basic",
-            Convert.ToBase64String(Encoding.UTF8.GetBytes(_cachedKvp))
+        var (username, password) = _confluenceUserCredentialProvider.Get();
+        var encodedCredentials = Convert.ToBase64String(
+            Encoding.UTF8.GetBytes($"{username}:{password}")
         );
 
-        return _authenticationHeader;
-    }
+        var httpClient = _httpClientFactory.CreateClient(ClientName);
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Basic",
+            encodedCredentials
+        );
 
-    public void Dispose()
-    {
-        _cachedHttpClient?.Dispose();
-        _httpHandler.Dispose();
+        return httpClient;
     }
 }

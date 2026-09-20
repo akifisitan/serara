@@ -1,6 +1,6 @@
 using Serara.Core.Metadata;
 
-namespace Serara.Infra.Confluence;
+namespace Serara.Module.WinServer;
 
 public class ConfluenceError(string Message, bool IsRetryable = true)
     : MetadataLoadException(Message, IsRetryable);

@@ -1,6 +1,12 @@
 namespace Serara.Infra.Confluence;
 
-public sealed class ConfluenceUserCredentialProvider : IConfluenceUserCredentialProvider
+public interface IConfluenceUserCredentialProvider
+{
+    ConfluenceUserCredential Get();
+    void Set(ConfluenceUserCredential confluenceUserCredential);
+}
+
+internal sealed class ConfluenceUserCredentialProvider : IConfluenceUserCredentialProvider
 {
     private ConfluenceUserCredential? _confluenceUserCredential;
 
@@ -13,7 +19,7 @@ public sealed class ConfluenceUserCredentialProvider : IConfluenceUserCredential
     {
         if (_confluenceUserCredential is null)
         {
-            throw new ConfluenceError(
+            throw new InvalidOperationException(
                 $"{nameof(ConfluenceUserCredential)} not set. Call {nameof(Set)}()"
             );
         }

@@ -1,4 +1,4 @@
-namespace Serara.Infra.Confluence;
+namespace Serara.Module.WinServer;
 
 public sealed record SearchResponse(string Id, string Type, string Title, SearchResponseBody Body);
 

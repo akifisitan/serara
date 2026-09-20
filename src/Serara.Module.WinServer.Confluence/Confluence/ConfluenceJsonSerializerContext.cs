@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Serara.Infra.Confluence;
+namespace Serara.Module.WinServer;
 
 [JsonSourceGenerationOptions(
     WriteIndented = true,
@@ -8,4 +8,4 @@ namespace Serara.Infra.Confluence;
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
 )]
 [JsonSerializable(typeof(SearchResponse))]
-public sealed partial class ConfluenceJsonSerializerContext : JsonSerializerContext;
+internal sealed partial class ConfluenceJsonSerializerContext : JsonSerializerContext;

@@ -9,7 +9,7 @@ internal sealed class WinServerMetadataLoader : IWinApplicationMetadataLoader
     private readonly CachedMetadataLoader _cachedMetadataLoader;
     private readonly ConfluenceMetadataLoader _confluenceMetadataLoader;
     private readonly IAuthenticationHandler<BasicAuthCredential> _authenticationHandler;
-    private readonly ConfluenceUserCredentialProvider _confluenceUserCredentialProvider;
+    private readonly IConfluenceUserCredentialProvider _confluenceUserCredentialProvider;
     private readonly LocalDebugMetadataLoader _localDebugMetadataLoader;
 
     public WinServerMetadataLoader(
@@ -17,7 +17,7 @@ internal sealed class WinServerMetadataLoader : IWinApplicationMetadataLoader
         CachedMetadataLoader cachedMetadataLoader,
         ConfluenceMetadataLoader confluenceMetadataLoader,
         IAuthenticationHandler<BasicAuthCredential> authenticationHandler,
-        ConfluenceUserCredentialProvider confluenceUserCredentialProvider,
+        IConfluenceUserCredentialProvider confluenceUserCredentialProvider,
         LocalDebugMetadataLoader localDebugMetadataLoader
     )
     {

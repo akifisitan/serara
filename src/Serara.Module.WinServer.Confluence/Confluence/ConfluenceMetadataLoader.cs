@@ -11,12 +11,12 @@ namespace Serara.Module.WinServer;
 
 public sealed partial class ConfluenceMetadataLoader : IWinApplicationMetadataLoader
 {
-    private readonly ConfluenceHttpClientFactory _confluenceHttpClientFactory;
+    private readonly IConfluenceHttpClientFactory _confluenceHttpClientFactory;
     private readonly ILogger<ConfluenceMetadataLoader> _logger;
     private readonly ConfluenceMetadataLoaderOptions _options;
 
     public ConfluenceMetadataLoader(
-        ConfluenceHttpClientFactory confluenceHttpClientFactory,
+        IConfluenceHttpClientFactory confluenceHttpClientFactory,
         ILogger<ConfluenceMetadataLoader> logger,
         IOptions<ConfluenceMetadataLoaderOptions> options
     )

@@ -30,11 +30,8 @@ public static class WinServerConfluenceRegistrations
             IValidateOptions<ConfluenceHttpClientFactoryOptions>,
             FluentValidationOptions<ConfluenceHttpClientFactoryOptions>
         >();
-        services.AddSingleton<ConfluenceUserCredentialProvider>();
-        services.AddSingleton<IConfluenceUserCredentialProvider>(sp =>
-            sp.GetRequiredService<ConfluenceUserCredentialProvider>()
-        );
-        services.AddSingleton<ConfluenceHttpClientFactory>();
+
+        services.AddConfluenceInfra();
         services.AddSingleton<ConfluenceMetadataLoader>();
         services.AddSingleton<CachedMetadataLoader>();
         services.AddSingleton<JsonFileStore>();
