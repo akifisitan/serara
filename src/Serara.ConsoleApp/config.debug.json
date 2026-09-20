@@ -1,0 +1,43 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Trace"
+    }
+  },
+  "Debug": {
+    "IsEnabled": true
+  },
+  "SeraraConsoleAppOptions": {
+    "NumConcurrentSearchOperations": 4
+  },
+  "WinServerModuleOptions": {
+    "ArchiveServerBasePath": "C:\\Users\\user\\AppData\\Local\\serara\\archive",
+    "LiveServerBasePath": "C:\\Users\\user\\AppData\\Local\\serara\\live",
+    "LogPathPrefix": "Loglar"
+  },
+  "SearchOptions": {
+    "FileSearchOptions": {
+      "ContinueSearchingInLogFileAfterFirstResult": false
+    },
+    "ZipFileSearchOptions": {
+      "ContinueSearchingInLogFileAfterFirstResult": false,
+      "StopSearchingOtherFilesInZipAfterFirstResult": false
+    }
+  },
+  "ConfluenceOptions": {
+    "ConfluenceMetadataLoaderOptions": {
+      "PageId": 1,
+      "UK": "UK",
+      "TeamName": "TeamName",
+      "ACI": "ACI",
+      "ApplicationName": "ApplicationName",
+      "Servers": "Servers",
+      "LogPath": "LogPath",
+      "ArchiveDirectoryName": "ArchiveDirectoryName"
+    },
+    "ConfluenceHttpClientFactoryOptions": {
+      "BaseUrl": "https://jira.myhost",
+      "TimeoutMs": 10000
+    }
+  }
+}

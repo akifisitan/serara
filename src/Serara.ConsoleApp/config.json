@@ -1,0 +1,39 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Trace"
+    }
+  },
+  "SeraraConsoleAppOptions": {
+    "NumConcurrentSearchOperations": 4
+  },
+  "SeraraHistoryOptions": {
+    "Enabled": true,
+    "FilePath": "search-history.json"
+  },
+  "KeyBindings": {
+    "NextView": { "Key": "RightArrow", "Modifiers": "Alt" },
+    "PreviousView": { "Key": "LeftArrow", "Modifiers": "Alt" },
+    "MainView": { "Key": "D1", "Modifiers": "Alt" },
+    "FileExplorerView": { "Key": "D2", "Modifiers": "Alt" },
+    "OpenLogView": { "Key": "D3", "Modifiers": "Alt" },
+    "HelpView": { "Key": "H", "Modifiers": "Alt" },
+    "Cancel": { "Key": "Escape", "Modifiers": "None" },
+    "RefreshResults": { "Key": "R", "Modifiers": "Alt" },
+    "OpenInExplorer": { "Key": "O", "Modifiers": "Alt" }
+  },
+  "WinServerModuleOptions": {
+    "ArchiveServerBasePath": "",
+    "LiveServerBasePath": "\\\\",
+    "LogPathPrefix": "Loglar"
+  },
+  "SearchOptions": {
+    "FileSearchOptions": {
+      "ContinueSearchingInLogFileAfterFirstResult": false
+    },
+    "ZipFileSearchOptions": {
+      "ContinueSearchingInLogFileAfterFirstResult": false,
+      "StopSearchingOtherFilesInZipAfterFirstResult": false
+    }
+  }
+}

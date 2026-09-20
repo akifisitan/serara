@@ -4,16 +4,16 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
   </Folder>
-  <Folder Name="/src/">
-    <Project Path="src/Serara.Console/Serara.Console.csproj" />
-    <Project Path="src/Serara.Files/Serara.Files.csproj" />
-    <Project Path="src/Serara.History/Serara.History.csproj" />
-    <Project Path="src/Serara.Infra.Confluence/Serara.Infra.Confluence.csproj" />
-    <Project Path="src/Serara.Module.WinServer.Confluence/Serara.Module.WinServer.Confluence.csproj" />
-    <Project Path="src/Serara.Module.WinServer.Console/Serara.Module.WinServer.Console.csproj" />
-    <Project Path="src/Serara.Module.WinServer/Serara.Module.WinServer.csproj" />
-    <Project Path="src/Serara.Search/Serara.Search.csproj" />
-    <Project Path="src/Serara.Tui/Serara.Tui.csproj" />
-  </Folder>
+  <Project Path="src/Serara.Console/Serara.Console.csproj" />
+  <Project Path="src/Serara.ConsoleApp/Serara.ConsoleApp.csproj" />
   <Project Path="src/Serara.Core/Serara.Core.csproj" />
+  <Project Path="src/Serara.Files/Serara.Files.csproj" />
+  <Project Path="src/Serara.Infra.Confluence/Serara.Infra.Confluence.csproj" />
+  <Project Path="src/Serara.Hosting/Serara.Hosting.csproj" />
+  <Project Path="src/Serara.History/Serara.History.csproj" />
+  <Project Path="src/Serara.Module.WinServer/Serara.Module.WinServer.csproj" />
+  <Project Path="src/Serara.Module.WinServer.Console/Serara.Module.WinServer.Console.csproj" />
+  <Project Path="src/Serara.Module.WinServer.Confluence/Serara.Module.WinServer.Confluence.csproj" />
+  <Project Path="src/Serara.Search/Serara.Search.csproj" />
+  <Project Path="src/Serara.Tui/Serara.Tui.csproj" />
 </Solution>

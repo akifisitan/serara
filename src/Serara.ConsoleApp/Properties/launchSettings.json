@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Serara": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
