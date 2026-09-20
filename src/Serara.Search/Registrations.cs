@@ -9,7 +9,14 @@ public static class Registrations
         services.AddSingleton<ISearchBackendRegistry, SearchBackendRegistry>();
         services.AddScoped<ISearchExecutor, SearchExecutor>();
         services.AddScoped<ISearchRunService, SearchRunService>();
-        services.AddOptions<SearchExecutionOptions>();
+        services
+            .AddOptions<SearchExecutionOptions>()
+            .Configure(x =>
+            {
+                x.NumConcurrentSearchOperations = 4;
+                x.QueueCapacityMultiplier = 2;
+            });
+
         return services;
     }
 }
