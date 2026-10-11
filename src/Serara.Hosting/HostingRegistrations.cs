@@ -27,6 +27,7 @@ public static class HostingRegistrations
         }
 
         services.AddHostedService<Startup>();
+        services.AddSingleton<ApplicationFailure>();
         services.AddSingleton<ConfigValidator>();
 
         return services;

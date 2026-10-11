@@ -15,14 +15,29 @@ public sealed class SeraraConsoleApplication
 
     public async Task Run(CancellationToken cancellationToken)
     {
-        var viewManagerTask = _viewManager.Start(cancellationToken);
-
-        await _mainView.Start(cancellationToken).ConfigureAwait(false);
+        using var applicationCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken
+        );
+        var viewManagerTask = _viewManager.Start(applicationCancellation.Token);
 
         try
         {
-            await viewManagerTask.ConfigureAwait(false);
+            var mainViewTask = _mainView.Start(applicationCancellation.Token);
+            var completedTask = await Task.WhenAny(mainViewTask, viewManagerTask)
+                .ConfigureAwait(false);
+            await completedTask.ConfigureAwait(false);
+            await mainViewTask.ConfigureAwait(false);
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
+        finally
+        {
+            await applicationCancellation.CancelAsync().ConfigureAwait(false);
+
+            try
+            {
+                await viewManagerTask.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+                when (applicationCancellation.IsCancellationRequested) { }
+        }
     }
 }

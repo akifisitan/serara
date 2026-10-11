@@ -78,18 +78,26 @@ internal sealed class ConfigValidator
                 }
             }
 
-            AnsiConsole.Clear();
+            ClearInteractiveConsole();
 
             return true;
         }
         catch (OptionsValidationException ex)
         {
-            AnsiConsole.Clear();
+            ClearInteractiveConsole();
             AnsiConsole.MarkupLineInterpolated(
                 $"[{Colors.Error}]Application config has errors:{Environment.NewLine}{ex.Message}[/]"
             );
             _logger.ZLogCritical(ex, $"Application config has errors");
             return false;
+        }
+    }
+
+    private static void ClearInteractiveConsole()
+    {
+        if (!System.Console.IsOutputRedirected)
+        {
+            AnsiConsole.Clear();
         }
     }
 }

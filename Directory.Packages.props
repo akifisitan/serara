@@ -21,7 +21,7 @@
     <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.12" />
     <PackageVersion Include="Vaerktojer.Spectre.Console" Version="0.0.1-upstream-0.57.2" />
     <PackageVersion Include="ZLogger" Version="2.5.10" />
-    <PackageVersion Include="FluentValidation" Version="12.1.1" />
-    <PackageVersion Include="HtmlAgilityPack" Version="1.12.4" />
+    <PackageVersion Include="FluentValidation" Version="12.2.0" />
+    <PackageVersion Include="HtmlAgilityPack" Version="1.13.0" />
   </ItemGroup>
 </Project>

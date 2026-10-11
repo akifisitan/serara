@@ -46,6 +46,11 @@ internal sealed class MainView : IView
 
         serviceProvider.GetRequiredService<ViewContext>().ViewId = Id;
 
+        foreach (var initializer in serviceProvider.GetServices<IConsoleInitializer>())
+        {
+            await initializer.Initialize(cancellationToken).ConfigureAwait(false);
+        }
+
         using var viewCancellationTokenSource = new CancellationTokenSource();
 
         _viewManager.RegisterView(HelpView.Id);

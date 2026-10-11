@@ -42,10 +42,18 @@ internal sealed class ViewManager : IViewManager, IDisposable
         // wait for a view to be registered via RegisterView()
         await _startEvent.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-        var viewNavigatorTask = Task.Run(() => ViewNavigator(cancellationToken), cancellationToken);
+        using var viewCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken
+        );
+        var viewNavigatorTask = Task.Run(
+            () => ViewNavigator(viewCancellation.Token),
+            viewCancellation.Token
+        );
 
-        var viewPrinterTask = ViewPrinter(cancellationToken);
+        var viewPrinterTask = ViewPrinter(viewCancellation.Token);
 
+        await Task.WhenAny(viewNavigatorTask, viewPrinterTask).ConfigureAwait(false);
+        await viewCancellation.CancelAsync().ConfigureAwait(false);
         await Task.WhenAll(viewNavigatorTask, viewPrinterTask).ConfigureAwait(false);
     }
 

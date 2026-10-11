@@ -1,9 +1,10 @@
+using Serara.Console;
 using Serara.Tui;
 using Spectre.Console;
 
 namespace Serara.Module.WinServer.Console;
 
-internal sealed class MetadataProvider
+internal sealed class MetadataProvider : IConsoleInitializer
 {
     private readonly ILogger<MetadataProvider> _logger;
     private readonly WinApplicationMetadataProvider _metadataService;
@@ -19,6 +20,8 @@ internal sealed class MetadataProvider
         _metadataService = metadataService;
         _console = console;
     }
+
+    public Task Initialize(CancellationToken cancellationToken) => GetMetadata(cancellationToken);
 
     public async Task<IReadOnlyList<WinApplicationMetadata>> GetMetadata(
         CancellationToken cancellationToken

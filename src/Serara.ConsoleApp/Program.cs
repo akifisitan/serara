@@ -1,14 +1,18 @@
 using Microsoft.Extensions.Hosting;
 using Serara.ConsoleApp;
+using Serara.Hosting;
 
-var builder = Host.CreateApplicationBuilder();
+return InteractiveHost.Run(CreateHost);
 
-builder.Configuration.Sources.Clear();
-builder.Configuration.AddJsonFile("config.json", optional: true, reloadOnChange: false);
-builder.Configuration.AddJsonFile("config.debug.json", optional: true, reloadOnChange: false);
+static IHost CreateHost()
+{
+    var builder = Host.CreateApplicationBuilder();
 
-builder.Services.AddSeraraConsoleApp(builder.Configuration);
+    builder.Configuration.Sources.Clear();
+    builder.Configuration.AddJsonFile("config.json", optional: true, reloadOnChange: false);
+    builder.Configuration.AddJsonFile("config.debug.json", optional: true, reloadOnChange: false);
 
-using var host = builder.Build();
+    builder.Services.AddSeraraConsoleApp(builder.Configuration);
 
-host.Run();
+    return builder.Build();
+}

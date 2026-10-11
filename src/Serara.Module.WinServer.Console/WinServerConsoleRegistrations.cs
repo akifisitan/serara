@@ -11,6 +11,7 @@ public static class WinServerConsoleRegistrations
     {
         services.AddScoped<WinServerConsoleInput>();
         services.AddScoped<MetadataProvider>();
+        services.AddScoped<IConsoleInitializer>(sp => sp.GetRequiredService<MetadataProvider>());
 
         services.AddScoped<WinServerSearchWorkflow>(sp => new WinServerSearchWorkflow(
             sp.GetRequiredService<RetrieveSearchOptionsStateMachine>(),

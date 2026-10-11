@@ -7,23 +7,46 @@ internal sealed class Startup : BackgroundService
 {
     private readonly ConfigValidator _configValidator;
     private readonly SeraraConsoleApplication _application;
+    private readonly IHostApplicationLifetime _lifetime;
+    private readonly ILogger<Startup> _logger;
+    private readonly ApplicationFailure _applicationFailure;
 
-    public Startup(ConfigValidator configValidator, SeraraConsoleApplication application)
+    public Startup(
+        ConfigValidator configValidator,
+        SeraraConsoleApplication application,
+        IHostApplicationLifetime lifetime,
+        ILogger<Startup> logger,
+        ApplicationFailure applicationFailure
+    )
     {
         _configValidator = configValidator;
         _application = application;
+        _lifetime = lifetime;
+        _logger = logger;
+        _applicationFailure = applicationFailure;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (!_configValidator.IsValid())
+        try
         {
-            System.Console.WriteLine("Press any key to exit");
-            System.Console.ReadKey(intercept: true);
+            if (!_configValidator.IsValid())
+            {
+                _applicationFailure.MarkFailed();
+                return;
+            }
 
-            return;
+            await _application.Run(stoppingToken).ConfigureAwait(false);
         }
-
-        await _application.Run(stoppingToken).ConfigureAwait(false);
+        catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested) { }
+        catch (Exception ex)
+        {
+            _applicationFailure.MarkFailed(ex);
+            _logger.ZLogCritical(ex, $"Serara stopped because of an unhandled error");
+        }
+        finally
+        {
+            _lifetime.StopApplication();
+        }
     }
 }
