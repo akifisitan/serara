@@ -1,4 +1,5 @@
 using Serara.Console;
+using Serara.Core.Metadata;
 using Serara.Tui;
 using Spectre.Console;
 
@@ -6,6 +7,8 @@ namespace Serara.Module.WinServer.Console;
 
 internal sealed class MetadataProvider : IConsoleInitializer
 {
+    private const int maxAttempts = 3;
+
     private readonly ILogger<MetadataProvider> _logger;
     private readonly WinApplicationMetadataProvider _metadataService;
     private readonly IMultiViewConsole _console;
@@ -29,12 +32,24 @@ internal sealed class MetadataProvider : IConsoleInitializer
     {
         try
         {
-            _console.WriteLine($"[{Colors.Log}]Retrieving metadata...[/]");
-            var metadata = await _metadataService
-                .GetMetadata(cancellationToken)
-                .ConfigureAwait(false);
-            _console.Clear();
-            return metadata;
+            for (var attempt = 1; ; attempt++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                _console.WriteLine($"[{Colors.Log}]Retrieving metadata...[/]");
+                try
+                {
+                    var metadata = await _metadataService
+                        .GetMetadata(cancellationToken)
+                        .ConfigureAwait(false);
+                    _console.Clear();
+                    return metadata;
+                }
+                catch (MetadataLoadException ex) when (ex.IsRetryable && attempt < maxAttempts)
+                {
+                    _console.WriteLine($"[{Colors.Error}]{ex.Message.EscapeMarkup()}[/]");
+                    _logger.ZLogWarning(ex, $"Failed to retrieve metadata on attempt {attempt}");
+                }
+            }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -42,9 +57,7 @@ internal sealed class MetadataProvider : IConsoleInitializer
         }
         catch (Exception ex)
         {
-            _console.WriteLine(
-                $"[{Colors.Error}]Failed to retrieve metadata: {ex.Message.EscapeMarkup()}[/]"
-            );
+            _console.WriteLine($"[{Colors.Error}]{ex.Message.EscapeMarkup()}[/]");
             _logger.ZLogError(ex, $"Failed to retrieve metadata");
             throw;
         }
