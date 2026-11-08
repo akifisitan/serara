@@ -6,21 +6,21 @@ namespace Serara.Hosting;
 internal sealed class Startup : BackgroundService
 {
     private readonly ConfigValidator _configValidator;
-    private readonly SeraraConsoleApplication _application;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IHostApplicationLifetime _lifetime;
     private readonly ILogger<Startup> _logger;
     private readonly ApplicationFailure _applicationFailure;
 
     public Startup(
         ConfigValidator configValidator,
-        SeraraConsoleApplication application,
+        IServiceProvider serviceProvider,
         IHostApplicationLifetime lifetime,
         ILogger<Startup> logger,
         ApplicationFailure applicationFailure
     )
     {
         _configValidator = configValidator;
-        _application = application;
+        _serviceProvider = serviceProvider;
         _lifetime = lifetime;
         _logger = logger;
         _applicationFailure = applicationFailure;
@@ -36,7 +36,8 @@ internal sealed class Startup : BackgroundService
                 return;
             }
 
-            await _application.Run(stoppingToken).ConfigureAwait(false);
+            var application = _serviceProvider.GetRequiredService<SeraraConsoleApplication>();
+            await application.Run(stoppingToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested) { }
         catch (Exception ex)

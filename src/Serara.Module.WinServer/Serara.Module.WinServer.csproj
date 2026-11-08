@@ -13,5 +13,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Serara.Core\Serara.Core.csproj" />
     <ProjectReference Include="..\Serara.Files\Serara.Files.csproj" />
+    <ProjectReference Include="..\Serara.Options\Serara.Options.csproj" />
   </ItemGroup>
 </Project>

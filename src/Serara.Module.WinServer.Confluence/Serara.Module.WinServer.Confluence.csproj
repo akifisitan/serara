@@ -14,7 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Serara.Core\Serara.Core.csproj" />
     <ProjectReference Include="..\Serara.Module.WinServer\Serara.Module.WinServer.csproj" />
-    <ProjectReference Include="..\Serara.Files\Serara.Files.csproj" />
+    <ProjectReference Include="..\Serara.Options\Serara.Options.csproj" />
     <ProjectReference Include="..\Serara.Infra.Confluence\Serara.Infra.Confluence.csproj" />
   </ItemGroup>
 </Project>

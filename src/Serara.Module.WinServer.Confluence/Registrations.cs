@@ -1,6 +1,5 @@
-using FluentValidation;
-using Serara.Files;
 using Serara.Infra.Confluence;
+using Serara.Options;
 
 namespace Serara.Module.WinServer;
 
@@ -10,26 +9,14 @@ public static class WinServerConfluenceRegistrations
     {
         services
             .AddOptions<ConfluenceMetadataLoaderOptions>()
-            .BindConfiguration($"ConfluenceOptions:{nameof(ConfluenceMetadataLoaderOptions)}");
+            .BindConfiguration($"ConfluenceOptions:{nameof(ConfluenceMetadataLoaderOptions)}")
+            .WithValidator<
+                ConfluenceMetadataLoaderOptions,
+                ConfluenceMetadataLoaderOptionsValidator
+            >();
         services
             .AddOptions<ConfluenceHttpClientFactoryOptions>()
             .BindConfiguration($"ConfluenceOptions:{nameof(ConfluenceHttpClientFactoryOptions)}");
-        services.AddSingleton<
-            IValidator<ConfluenceMetadataLoaderOptions>,
-            ConfluenceMetadataLoaderOptionsValidator
-        >();
-        services.AddSingleton<
-            IValidateOptions<ConfluenceMetadataLoaderOptions>,
-            FluentValidationOptions<ConfluenceMetadataLoaderOptions>
-        >();
-        services.AddSingleton<
-            IValidator<ConfluenceHttpClientFactoryOptions>,
-            ConfluenceHttpClientFactoryOptionsValidator
-        >();
-        services.AddSingleton<
-            IValidateOptions<ConfluenceHttpClientFactoryOptions>,
-            FluentValidationOptions<ConfluenceHttpClientFactoryOptions>
-        >();
 
         services.AddConfluenceInfra();
         services.AddSingleton<ConfluenceMetadataLoader>();

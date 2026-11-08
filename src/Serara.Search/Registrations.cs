@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Serara.Options;
 
 namespace Serara.Search;
 
@@ -11,11 +12,7 @@ public static class Registrations
         services.AddScoped<ISearchRunService, SearchRunService>();
         services
             .AddOptions<SearchExecutionOptions>()
-            .Configure(x =>
-            {
-                x.NumConcurrentSearchOperations = 4;
-                x.QueueCapacityMultiplier = 2;
-            });
+            .WithValidator<SearchExecutionOptions, SearchExecutionOptionsValidator>();
 
         return services;
     }

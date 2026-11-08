@@ -1,4 +1,4 @@
-using FluentValidation;
+using Serara.Options;
 
 namespace Serara.Files;
 
@@ -13,18 +13,12 @@ public static class Registrations
         services.TryAddSingleton<ZipFileEntryExtractor>();
 
         services
-            .AddSingleton<IValidator<FileSearchOptions>, FileSearchOptionsValidator>()
-            .AddSingleton<
-                IValidateOptions<FileSearchOptions>,
-                FluentValidationOptions<FileSearchOptions>
-            >();
+            .AddOptions<FileSearchOptions>()
+            .WithValidator<FileSearchOptions, FileSearchOptionsValidator>();
 
         services
-            .AddSingleton<IValidator<ZipFileSearchOptions>, ZipFileSearchOptionsValidator>()
-            .AddSingleton<
-                IValidateOptions<ZipFileSearchOptions>,
-                FluentValidationOptions<ZipFileSearchOptions>
-            >();
+            .AddOptions<ZipFileSearchOptions>()
+            .WithValidator<ZipFileSearchOptions, ZipFileSearchOptionsValidator>();
 
         services.TryAddSingleton<ITimeProvider, TimeProvider>();
 

@@ -7,16 +7,17 @@
   "Debug": {
     "IsEnabled": true
   },
-  "SeraraConsoleAppOptions": {
-    "StopSearchAfterFirstMatch": false,
-    "NumConcurrentSearchOperations": 4
-  },
   "WinServerModuleOptions": {
     "ArchiveServerBasePath": "C:\\Users\\user\\AppData\\Local\\serara\\archive",
     "LiveServerBasePath": "C:\\Users\\user\\AppData\\Local\\serara\\live",
     "LogPathPrefix": "Loglar"
   },
   "SearchOptions": {
+    "SearchExecutionOptions": {
+      "StopSearchAfterFirstMatch": false,
+      "NumConcurrentSearchOperations": 4,
+      "QueueCapacityMultiplier": 2
+    },
     "FileSearchOptions": {
       "StopFileAfterFirstMatch": true
     },

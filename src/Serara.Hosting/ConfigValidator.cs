@@ -2,6 +2,8 @@ using System.Diagnostics;
 using Serara.Console;
 using Serara.Core.Configuration;
 using Serara.Files;
+using Serara.Options;
+using Serara.Search;
 using Serara.Tui;
 using Spectre.Console;
 
@@ -44,7 +46,21 @@ internal sealed class ConfigValidator
             AnsiConsole.MarkupLine($"[{Colors.Title}]Validating config...[/]");
             _logger.ZLogInformation($" Validating config...");
 
-            // Validate core app options
+            var failures = _serviceProvider
+                .GetServices<IOptionsValidationTarget>()
+                .Select(target => target.Validate())
+                .OfType<OptionsValidationFailure>()
+                .ToList();
+
+            if (failures.Count > 0)
+            {
+                throw new AggregateOptionsValidationException(failures);
+            }
+
+            // Log selected options after all registered options have passed validation.
+            var searchExecutionOptions = _serviceProvider
+                .GetRequiredService<IOptions<SearchExecutionOptions>>()
+                .Value;
             var fileSearchOptions = _serviceProvider
                 .GetRequiredService<IOptions<FileSearchOptions>>()
                 .Value;
@@ -54,11 +70,11 @@ internal sealed class ConfigValidator
             var seraraConsoleAppOptions = _serviceProvider
                 .GetRequiredService<IOptions<SeraraConsoleAppOptions>>()
                 .Value;
-            _ = _serviceProvider.GetRequiredService<IOptions<KeyBindingOptions>>().Value;
 
             _logger.ZLogInformation(
                 $"""
                  Running application with the following core options
+                {searchExecutionOptions}
                 {fileSearchOptions}
                 {zipFileSearchOptions}
                 {seraraConsoleAppOptions}
@@ -82,7 +98,8 @@ internal sealed class ConfigValidator
 
             return true;
         }
-        catch (OptionsValidationException ex)
+        catch (Exception ex)
+            when (ex is OptionsValidationException or AggregateOptionsValidationException)
         {
             ClearInteractiveConsole();
             AnsiConsole.MarkupLineInterpolated(

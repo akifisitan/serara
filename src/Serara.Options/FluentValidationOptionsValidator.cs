@@ -1,18 +1,21 @@
+using System.Diagnostics.CodeAnalysis;
 using FluentValidation;
+using Microsoft.Extensions.Options;
 
-namespace Serara.Files;
+namespace Serara.Options;
 
-public sealed class FluentValidationOptions<T> : IValidateOptions<T>
+public sealed class FluentValidationOptionsValidator<
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] T
+> : IValidateOptions<T>
     where T : class
 {
     private readonly IValidator<T> _validator;
 
-    public FluentValidationOptions(IValidator<T> validator)
+    public FluentValidationOptionsValidator(IValidator<T> validator)
     {
         _validator = validator;
     }
 
-    // Will only use unnamed options so leaving name alone
     public ValidateOptionsResult Validate(string? name, T options)
     {
         var result = _validator.Validate(options);

@@ -4,10 +4,6 @@
       "Default": "Trace"
     }
   },
-  "SeraraConsoleAppOptions": {
-    "StopSearchAfterFirstMatch": false,
-    "NumConcurrentSearchOperations": 4
-  },
   "SeraraHistoryOptions": {
     "Enabled": true,
     "FilePath": "search-history.json"
@@ -29,6 +25,11 @@
     "LogPathPrefix": "Loglar"
   },
   "SearchOptions": {
+    "SearchExecutionOptions": {
+      "StopSearchAfterFirstMatch": false,
+      "NumConcurrentSearchOperations": 4,
+      "QueueCapacityMultiplier": 2
+    },
     "FileSearchOptions": {
       "StopFileAfterFirstMatch": true
     },

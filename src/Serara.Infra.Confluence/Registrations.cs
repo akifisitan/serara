@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Serara.Options;
 
 namespace Serara.Infra.Confluence;
 
@@ -7,6 +8,13 @@ public static class WinServerConfluenceRegistrations
 {
     public static IServiceCollection AddConfluenceInfra(this IServiceCollection services)
     {
+        services
+            .AddOptions<ConfluenceHttpClientFactoryOptions>()
+            .WithValidator<
+                ConfluenceHttpClientFactoryOptions,
+                ConfluenceHttpClientFactoryOptionsValidator
+            >();
+
         services.TryAddSingleton<ConfluenceUserCredentialProvider>();
         services.TryAddSingleton<IConfluenceUserCredentialProvider>(sp =>
             sp.GetRequiredService<ConfluenceUserCredentialProvider>()

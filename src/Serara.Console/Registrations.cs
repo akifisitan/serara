@@ -1,5 +1,5 @@
-using FluentValidation;
 using Serara.Files;
+using Serara.Options;
 using Serara.Search;
 using Serara.Tui;
 
@@ -24,24 +24,15 @@ public static class Registrations
             .BindConfiguration($"SearchOptions:{nameof(ZipFileSearchOptions)}");
         services
             .AddOptions<SeraraConsoleAppOptions>()
-            .Bind(configuration.GetSection(nameof(SeraraConsoleAppOptions)));
+            .Bind(configuration.GetSection(nameof(SeraraConsoleAppOptions)))
+            .WithValidator<SeraraConsoleAppOptions, SeraraConsoleAppOptionsValidator>();
         services
             .AddOptions<SearchExecutionOptions>()
-            .BindConfiguration(nameof(SeraraConsoleAppOptions));
-        services.AddOptions<KeyBindingOptions>().BindConfiguration("KeyBindings");
-
+            .BindConfiguration($"SearchOptions:{nameof(SearchExecutionOptions)}");
         services
-            .AddSingleton<IValidator<SeraraConsoleAppOptions>, SeraraConsoleAppOptionsValidator>()
-            .AddSingleton<
-                IValidateOptions<SeraraConsoleAppOptions>,
-                FluentValidationOptions<SeraraConsoleAppOptions>
-            >();
-        services
-            .AddSingleton<IValidator<KeyBindingOptions>, KeyBindingOptionsValidator>()
-            .AddSingleton<
-                IValidateOptions<KeyBindingOptions>,
-                FluentValidationOptions<KeyBindingOptions>
-            >();
+            .AddOptions<KeyBindingOptions>()
+            .BindConfiguration("KeyBindings")
+            .WithValidator<KeyBindingOptions, KeyBindingOptionsValidator>();
 
         services.AddSingleton<IKeyRegistrationMapping, KeyRegistrationMapping>();
         services.AddSingleton<KeyBindingSet>();

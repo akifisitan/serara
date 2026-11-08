@@ -15,6 +15,7 @@
     <ProjectReference Include="..\Serara.Core\Serara.Core.csproj" />
     <ProjectReference Include="..\Serara.Files\Serara.Files.csproj" />
     <ProjectReference Include="..\Serara.History\Serara.History.csproj" />
+    <ProjectReference Include="..\Serara.Options\Serara.Options.csproj" />
     <ProjectReference Include="..\Serara.Tui\Serara.Tui.csproj" />
     <ProjectReference Include="..\Serara.Module.WinServer\Serara.Module.WinServer.csproj" />
     <ProjectReference Include="..\Serara.Module.WinServer.Console\Serara.Module.WinServer.Console.csproj" />

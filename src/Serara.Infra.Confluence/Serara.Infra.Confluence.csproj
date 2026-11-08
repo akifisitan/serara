@@ -9,5 +9,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Serara.Core\Serara.Core.csproj" />
+    <ProjectReference Include="..\Serara.Options\Serara.Options.csproj" />
   </ItemGroup>
 </Project>
