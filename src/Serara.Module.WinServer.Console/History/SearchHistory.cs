@@ -74,12 +74,13 @@ internal sealed class SearchHistory
             .ConfigureAwait(false);
     }
 
-    public IReadOnlyList<WinServerSearchHistoryEntry> RetrieveAll()
+    public async Task<IReadOnlyList<WinServerSearchHistoryEntry>> RetrieveAll(
+        CancellationToken cancellationToken
+    )
     {
+        var entries = await _store.RetrieveAll(cancellationToken).ConfigureAwait(false);
         var records = new List<WinServerSearchHistoryEntry>();
-        foreach (
-            var entry in _store.RetrieveAll().Where(entry => entry.CapabilityId == capabilityId)
-        )
+        foreach (var entry in entries.Where(entry => entry.CapabilityId == capabilityId))
         {
             try
             {

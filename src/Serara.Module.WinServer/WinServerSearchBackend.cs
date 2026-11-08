@@ -34,6 +34,7 @@ public sealed class WinServerSearchBackend
     protected override async IAsyncEnumerable<WinServerSearchWorkItem> Discover(
         WinServerSearchRequest request,
         Action<ModuleSearchProgress> progress,
+        Action<Exception, string> failure,
         [EnumeratorCancellation] CancellationToken cancellationToken
     )
     {
@@ -44,7 +45,7 @@ public sealed class WinServerSearchBackend
             {
                 var path = _pathProvider.GetLiveServerLogPath(metadata, serverName);
                 await foreach (
-                    var item in DiscoverPath(path, request, progress, cancellationToken)
+                    var item in DiscoverPath(path, request, progress, failure, cancellationToken)
                         .ConfigureAwait(false)
                 )
                 {
@@ -59,7 +60,7 @@ public sealed class WinServerSearchBackend
             {
                 var path = _pathProvider.GetArchiveServerLogPath(metadata, serverName);
                 await foreach (
-                    var item in DiscoverPath(path, request, progress, cancellationToken)
+                    var item in DiscoverPath(path, request, progress, failure, cancellationToken)
                         .ConfigureAwait(false)
                 )
                 {
@@ -152,22 +153,33 @@ public sealed class WinServerSearchBackend
         string path,
         WinServerSearchRequest request,
         Action<ModuleSearchProgress> progress,
+        Action<Exception, string> failure,
         [EnumeratorCancellation] CancellationToken cancellationToken
     )
     {
         var started = Stopwatch.GetTimestamp();
         progress(new SearchDiscoveryStarted(path));
-        var entries = await Task.Run(
-                () =>
-                    _fileEnumerator.GetFiles(
-                        path,
-                        request.StartTime,
-                        request.EndTime,
-                        cancellationToken
-                    ),
-                cancellationToken
-            )
-            .ConfigureAwait(false);
+        List<FileEntryWrapper>? entries = null;
+        try
+        {
+            entries = await Task.Run(
+                    () =>
+                        _fileEnumerator.GetFiles(
+                            path,
+                            request.StartTime,
+                            request.EndTime,
+                            cancellationToken
+                        ),
+                    cancellationToken
+                )
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            failure(ex, path);
+            yield break;
+        }
         progress(
             new SearchDiscoveryFinished(path, entries.Count, Stopwatch.GetElapsedTime(started))
         );

@@ -7,14 +7,14 @@ namespace Serara.Console;
 internal sealed class SearchRunOrchestrator
 {
     private readonly ILogger<SearchRunOrchestrator> _logger;
-    private readonly SearchRun _searchRun;
+    private readonly ISearchRun _searchRun;
     private readonly ITimeProvider _timeProvider;
     private readonly IMultiViewConsole _console;
     private readonly SearchResultsChannel _resultsChannel;
 
     public SearchRunOrchestrator(
         ILogger<SearchRunOrchestrator> logger,
-        SearchRun searchRun,
+        ISearchRun searchRun,
         ITimeProvider timeProvider,
         IMultiViewConsole console,
         SearchResultsChannel resultsChannel

@@ -3,7 +3,11 @@ using Serara.Core.Search;
 
 namespace Serara.Search;
 
-public sealed record SearchRunFailure(Exception Exception, SearchWorkItem? WorkItem);
+public sealed record SearchRunFailure(
+    Exception Exception,
+    SearchWorkItem? WorkItem,
+    string? DiscoveryPath = null
+);
 
 public sealed record SearchRunOutcome(bool IsCancelled, IReadOnlyList<SearchRunFailure> Failures)
 {
@@ -50,8 +54,8 @@ public sealed class SearchRunService : ISearchRunService
                     request,
                     publish,
                     progress,
-                    (exception, workItem) =>
-                        failures.Enqueue(new SearchRunFailure(exception, workItem)),
+                    (exception, workItem, discoveryPath) =>
+                        failures.Enqueue(new SearchRunFailure(exception, workItem, discoveryPath)),
                     cancellationToken
                 )
                 .ConfigureAwait(false);

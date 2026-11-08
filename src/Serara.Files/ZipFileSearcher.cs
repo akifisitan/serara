@@ -7,10 +7,12 @@ namespace Serara.Files;
 public sealed class ZipFileSearcher
 {
     private readonly ZipFileSearchOptions _options;
+    private readonly ILogRotation _logRotation;
 
-    public ZipFileSearcher(IOptions<ZipFileSearchOptions> options)
+    public ZipFileSearcher(IOptions<ZipFileSearchOptions> options, ILogRotation logRotation)
     {
         _options = options.Value;
+        _logRotation = logRotation;
     }
 
     public async IAsyncEnumerable<ZippedLogFileSearchResult> SearchInZip<
@@ -162,34 +164,23 @@ public sealed class ZipFileSearcher
 
         foreach (var key in logGroups.Keys)
         {
-            // Sort each group by last write time ascending
-            // use n th entry's lastWriteTime as n + 1 th entry's creationTime
-            var sortedGroup = logGroups[key].OrderBy(x => x.LastWriteTime).ToList();
-
-            var firstEntry = sortedGroup[0];
-            sortedEntries.Add(
-                new ZipArchiveEntryWrapper(
-                    zipFilePath,
-                    firstEntry,
-                    DateTimeOffset.MinValue,
-                    firstEntry.LastWriteTime
+            foreach (
+                var (entry, estimatedCreationTime, lastWriteTime) in _logRotation.Calculate(
+                    logGroups[key].OrderBy(entry => entry.LastWriteTime),
+                    entry => entry.LastWriteTime,
+                    entry =>
+                        entry.LastWriteTime.Subtract(
+                            TimeSpan.FromSeconds(_options.CreationTimeBufferInSeconds)
+                        )
                 )
-            );
-
-            for (var i = 0; i < sortedGroup.Count - 1; i++)
+            )
             {
-                var currentEntry = sortedGroup[i];
-                var nextEntry = sortedGroup[i + 1];
-
-                // Handle next entry
                 sortedEntries.Add(
                     new ZipArchiveEntryWrapper(
                         zipFilePath,
-                        nextEntry,
-                        currentEntry.LastWriteTime.Subtract(
-                            TimeSpan.FromSeconds(_options.CreationTimeBufferInSeconds)
-                        ),
-                        nextEntry.LastWriteTime
+                        entry,
+                        estimatedCreationTime,
+                        lastWriteTime
                     )
                 );
             }

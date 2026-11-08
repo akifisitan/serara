@@ -160,12 +160,11 @@ internal sealed class MainView : IView
         CancellationToken cancellationToken
     )
     {
-        await historyStore.EnsureInitialized(cancellationToken).ConfigureAwait(false);
+        var entries = await historyStore.RetrieveAll(cancellationToken).ConfigureAwait(false);
         var availableCapabilityIds = workflows
             .Select(workflow => workflow.Id)
             .ToHashSet(StringComparer.Ordinal);
-        var unavailableEntries = historyStore
-            .RetrieveAll()
+        var unavailableEntries = entries
             .Where(entry => !availableCapabilityIds.Contains(entry.CapabilityId))
             .OrderByDescending(entry => entry.CreatedAt)
             .ToList();

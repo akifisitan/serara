@@ -62,7 +62,7 @@ public static class Registrations
         ));
 
         services.AddScoped<SearchRunOrchestrator>();
-        services.AddScoped<SearchRun>();
+        services.AddScoped<ISearchRun, SearchRun>();
         services.AddScoped<ViewContext>();
         services.AddScoped<IViewContext>(sp => sp.GetRequiredService<ViewContext>());
 

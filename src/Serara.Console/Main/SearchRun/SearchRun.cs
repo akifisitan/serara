@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Serara.Core.Search;
 using Serara.Search;
 using Serara.Tui;
@@ -41,11 +42,19 @@ internal sealed class SearchRun : ISearchRun
     )
     {
         var resultLimitReached = 0;
+        var loggedPaths = new ConcurrentDictionary<string, byte>(
+            OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal
+        );
         var outcome = await _searchRunService
             .Run(
                 searchOptions,
                 (result, _) =>
                 {
+                    if (loggedPaths.TryAdd(result.Summary, 0))
+                    {
+                        _logger.ZLogInformation($"[{runId}] Match found in: {result.Summary}");
+                    }
+
                     if (
                         !_results.TryPublish(result)
                         && Interlocked.Exchange(ref resultLimitReached, 1) == 0
@@ -71,7 +80,7 @@ internal sealed class SearchRun : ISearchRun
         {
             _logger.ZLogError(
                 failure.Exception,
-                $"[{runId}] Search failed for {failure.WorkItem?.DisplayName}"
+                $"[{runId}] Search failed for {failure.WorkItem?.DisplayName ?? failure.DiscoveryPath}"
             );
         }
 

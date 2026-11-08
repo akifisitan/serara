@@ -42,7 +42,21 @@ internal sealed class SearchHistoryStore : ISearchHistoryStore, IDisposable
         }
     }
 
-    public IReadOnlyList<SearchHistoryEntry> RetrieveAll() => [.. _entries.Values];
+    public async Task<IReadOnlyList<SearchHistoryEntry>> RetrieveAll(
+        CancellationToken cancellationToken = default
+    )
+    {
+        await EnsureInitialized(cancellationToken).ConfigureAwait(false);
+        await _lock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            return [.. _entries.Values];
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
 
     public async Task Remove(string id, CancellationToken cancellationToken = default)
     {
@@ -73,11 +87,6 @@ internal sealed class SearchHistoryStore : ISearchHistoryStore, IDisposable
 
     public async Task EnsureInitialized(CancellationToken cancellationToken = default)
     {
-        if (_initialized)
-        {
-            return;
-        }
-
         await _lock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {

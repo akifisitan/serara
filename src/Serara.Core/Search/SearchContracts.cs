@@ -39,6 +39,7 @@ public interface ISearchBackend
     IAsyncEnumerable<SearchWorkItem> Discover(
         ISearchRequest request,
         Action<ModuleSearchProgress> progress,
+        Action<Exception, string> failure,
         CancellationToken cancellationToken
     );
 
@@ -63,11 +64,12 @@ public abstract class SearchBackend<TRequest, TWorkItem, TSource> : ISearchBacke
     public async IAsyncEnumerable<SearchWorkItem> Discover(
         ISearchRequest request,
         Action<ModuleSearchProgress> progress,
+        Action<Exception, string> failure,
         [EnumeratorCancellation] CancellationToken cancellationToken
     )
     {
         await foreach (
-            var item in Discover(GetRequest(request), progress, cancellationToken)
+            var item in Discover(GetRequest(request), progress, failure, cancellationToken)
                 .ConfigureAwait(false)
         )
         {
@@ -104,6 +106,7 @@ public abstract class SearchBackend<TRequest, TWorkItem, TSource> : ISearchBacke
     protected abstract IAsyncEnumerable<TWorkItem> Discover(
         TRequest request,
         Action<ModuleSearchProgress> progress,
+        Action<Exception, string> failure,
         CancellationToken cancellationToken
     );
 

@@ -7,6 +7,7 @@ namespace Serara.Module.WinServer;
 public sealed class WinFileEnumerator : IFileEnumerator
 {
     private readonly FileEnumeratorOptions _options;
+    private readonly ILogRotation _logRotation;
     private readonly EnumerationOptions _enumerationOptions = new()
     {
         RecurseSubdirectories = true,
@@ -16,9 +17,10 @@ public sealed class WinFileEnumerator : IFileEnumerator
         ReturnSpecialDirectories = false,
     };
 
-    public WinFileEnumerator(IOptions<FileEnumeratorOptions> options)
+    public WinFileEnumerator(IOptions<FileEnumeratorOptions> options, ILogRotation logRotation)
     {
         _options = options.Value;
+        _logRotation = logRotation;
     }
 
     public List<FileEntryWrapper> GetFiles(
@@ -160,39 +162,23 @@ public sealed class WinFileEnumerator : IFileEnumerator
 
         foreach (var key in logGroups.Keys)
         {
-            // Sort each group by last write time ascending
-            // use n th entry's lastWriteTime as n + 1 th entry's creationTime
-            var sortedGroup = logGroups[key].OrderBy(x => x.LastWriteTime).ToList();
-
-            var firstEntry = sortedGroup[0];
-
-            // The oldest retained file may contain logs from before its last-write date.
-            sortedEntries.Add(
-                new LogFileEntryWrapper(DateTimeOffset.MinValue, firstEntry.LastWriteTime)
-                {
-                    FilePath = firstEntry.FullName,
-                    Length = firstEntry.Length,
-                    CreationTimeUtc = firstEntry.CreationTimeUtc,
-                }
-            );
-
-            for (var i = 0; i < sortedGroup.Count - 1; i++)
-            {
-                var currentEntry = sortedGroup[i];
-                var nextEntry = sortedGroup[i + 1];
-
-                // Handle next entry
-                sortedEntries.Add(
-                    new LogFileEntryWrapper(
-                        currentEntry.LastWriteTime.Subtract(
+            foreach (
+                var (entry, estimatedCreationTime, lastWriteTime) in _logRotation.Calculate(
+                    logGroups[key].OrderBy(entry => entry.LastWriteTime),
+                    entry => entry.LastWriteTime,
+                    entry =>
+                        entry.LastWriteTime.Subtract(
                             TimeSpan.FromSeconds(_options.CreationTimeBufferInSeconds)
-                        ),
-                        nextEntry.LastWriteTime
-                    )
+                        )
+                )
+            )
+            {
+                sortedEntries.Add(
+                    new LogFileEntryWrapper(estimatedCreationTime, lastWriteTime)
                     {
-                        FilePath = nextEntry.FullName,
-                        Length = nextEntry.Length,
-                        CreationTimeUtc = nextEntry.CreationTimeUtc,
+                        FilePath = entry.FullName,
+                        Length = entry.Length,
+                        CreationTimeUtc = entry.CreationTimeUtc,
                     }
                 );
             }

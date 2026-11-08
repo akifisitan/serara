@@ -7,6 +7,7 @@ public static class Registrations
     public static IServiceCollection AddSeraraFiles(this IServiceCollection services)
     {
         services.TryAddSingleton<ZipFileSearcher>();
+        services.TryAddSingleton<ILogRotation, LogRotation>();
         services.TryAddSingleton<FileSearcher>();
         services.TryAddSingleton<FileSystemEnumerator>();
         services.TryAddSingleton<ZipFileEntryExtractor>();

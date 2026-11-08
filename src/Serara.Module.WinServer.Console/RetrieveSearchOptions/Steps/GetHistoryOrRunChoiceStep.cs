@@ -33,8 +33,8 @@ internal sealed class GetHistoryOrRunChoiceStep
 
         try
         {
-            await _searchHistory.EnsureInitialized(cancellationToken).ConfigureAwait(false);
-            if (_searchHistory.RetrieveAll().Count == 0)
+            var entries = await _searchHistory.RetrieveAll(cancellationToken).ConfigureAwait(false);
+            if (entries.Count == 0)
             {
                 input.IsOnSearchHistoryBranch = false;
                 return new(PromptResult.Success, SearchOptionChoice.NewRun);

@@ -16,5 +16,5 @@ public interface ISearchHistoryStore
     Task Add(SearchHistoryEntry entry, CancellationToken cancellationToken);
     Task Remove(string id, CancellationToken cancellationToken);
     Task EnsureInitialized(CancellationToken cancellationToken);
-    IReadOnlyList<SearchHistoryEntry> RetrieveAll();
+    Task<IReadOnlyList<SearchHistoryEntry>> RetrieveAll(CancellationToken cancellationToken);
 }

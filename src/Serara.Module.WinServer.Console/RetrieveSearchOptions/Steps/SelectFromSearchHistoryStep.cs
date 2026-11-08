@@ -30,8 +30,9 @@ internal sealed class SelectFromSearchHistoryStep
             return PromptResult.Cancel;
         }
 
+        var entries = await _searchHistory.RetrieveAll(cancellationToken).ConfigureAwait(false);
         var (result, historyEntry) = await _consoleInput
-            .SelectFromSearchHistoryEntries(_searchHistory.RetrieveAll(), cancellationToken)
+            .SelectFromSearchHistoryEntries(entries, cancellationToken)
             .ConfigureAwait(false);
 
         if (result == PromptResult.Cancel)

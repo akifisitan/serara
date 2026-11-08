@@ -10,7 +10,7 @@ public interface ISearchExecutor
         ISearchRequest request,
         Func<ModuleSearchResult, CancellationToken, ValueTask> publish,
         Action<ModuleSearchProgress> progress,
-        Action<Exception, SearchWorkItem?> failure,
+        Action<Exception, SearchWorkItem?, string?> failure,
         CancellationToken cancellationToken
     );
 }
@@ -30,7 +30,7 @@ internal sealed class SearchExecutor : ISearchExecutor
         ISearchRequest request,
         Func<ModuleSearchResult, CancellationToken, ValueTask> publish,
         Action<ModuleSearchProgress> progress,
-        Action<Exception, SearchWorkItem?> failure,
+        Action<Exception, SearchWorkItem?, string?> failure,
         CancellationToken cancellationToken
     )
     {
@@ -76,7 +76,7 @@ internal sealed class SearchExecutor : ISearchExecutor
         ISearchRequest request,
         ChannelWriter<SearchWorkItem> writer,
         Action<ModuleSearchProgress> progress,
-        Action<Exception, SearchWorkItem?> failure,
+        Action<Exception, SearchWorkItem?, string?> failure,
         CancellationToken cancellationToken
     )
     {
@@ -84,7 +84,12 @@ internal sealed class SearchExecutor : ISearchExecutor
         {
             await foreach (
                 var item in backend
-                    .Discover(request, progress, cancellationToken)
+                    .Discover(
+                        request,
+                        progress,
+                        (exception, path) => failure(exception, null, path),
+                        cancellationToken
+                    )
                     .ConfigureAwait(false)
             )
             {
@@ -93,7 +98,7 @@ internal sealed class SearchExecutor : ISearchExecutor
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            failure(ex, null);
+            failure(ex, null, null);
         }
         finally
         {
@@ -107,7 +112,7 @@ internal sealed class SearchExecutor : ISearchExecutor
         ChannelReader<SearchWorkItem> reader,
         Func<ModuleSearchResult, CancellationToken, ValueTask> publish,
         Action<ModuleSearchProgress> progress,
-        Action<Exception, SearchWorkItem?> failure,
+        Action<Exception, SearchWorkItem?, string?> failure,
         CancellationToken cancellationToken
     )
     {
@@ -126,7 +131,7 @@ internal sealed class SearchExecutor : ISearchExecutor
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                failure(ex, item);
+                failure(ex, item, null);
             }
         }
     }
