@@ -10,7 +10,7 @@ internal sealed class OpenLogFileView : IView
 {
     public static readonly ViewId Id = new(nameof(OpenLogFileView));
     public static readonly ViewPresentation Presentation = new(
-        "Open log file",
+        "View found files",
         Colors.DarkSeaGreen
     );
 
