@@ -44,12 +44,7 @@ internal sealed class SelectDirectoryForFileExplorerStep
             cancellationToken
         );
 
-        List<FileTraversal> choices = [];
-
-        if (input.CurrentDirectory.Parent is not null && !isRootDir)
-        {
-            choices.Add(new FileTraversal(true, null!));
-        }
+        var choices = new List<FileTraversal> { new(true, null!) };
 
         choices.AddRange(logFiles.Select(x => new FileTraversal(false, x)));
 

@@ -5,6 +5,6 @@ internal sealed class RetrieveFileExplorerOptionsStateMachineState : StateMachin
     public WinApplicationMetadata SelectedData { get; set; } = default!;
     public string SelectedServer { get; set; } = default!;
     public bool IsArchive { get; set; }
-    public DirectoryInfo CurrentDirectory { get; set; } = default!;
+    public DirectoryInfo? CurrentDirectory { get; set; }
     public bool HasArchiveServer { get; set; }
 }

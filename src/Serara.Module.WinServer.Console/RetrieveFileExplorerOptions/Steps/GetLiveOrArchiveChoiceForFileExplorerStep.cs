@@ -34,6 +34,7 @@ internal sealed class GetLiveOrArchiveChoiceForFileExplorerStep
         }
 
         input.IsArchive = value;
+        input.CurrentDirectory = null;
 
         return result;
     }

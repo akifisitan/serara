@@ -32,7 +32,11 @@ internal sealed class GetServerForFileExplorerStep
         }
 
         input.SelectedServer = value;
-        input.HasArchiveServer = _pathProvider.SupportsArchive(input.SelectedData);
+        input.CurrentDirectory = null;
+        input.IsArchive = false;
+        input.HasArchiveServer =
+            _pathProvider.SupportsArchiveSearch
+            && _pathProvider.SupportsArchive(input.SelectedData);
 
         return input.HasArchiveServer;
     }

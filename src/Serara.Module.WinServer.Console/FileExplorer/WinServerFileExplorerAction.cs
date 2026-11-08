@@ -74,7 +74,14 @@ internal sealed class WinServerFileExplorerAction : IInteractiveAction
 
             lastProcessedTs = result.InsertedAt;
 
-            Utils.OpenInFileExplorer(result.Event.Path);
+            try
+            {
+                Utils.OpenInFileExplorer(result.Event.Path);
+            }
+            catch (Exception ex)
+            {
+                _logger.ZLogError(ex, $"Failed to open {result.Event.Path} in Windows Explorer");
+            }
         }
     }
 }
