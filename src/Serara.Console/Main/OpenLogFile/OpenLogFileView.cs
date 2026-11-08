@@ -9,6 +9,10 @@ namespace Serara.Console;
 internal sealed class OpenLogFileView : IView
 {
     public static readonly ViewId Id = new(nameof(OpenLogFileView));
+    public static readonly ViewPresentation Presentation = new(
+        "Open log file",
+        Colors.DarkSeaGreen
+    );
 
     private readonly ILogger<OpenLogFileView> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -58,10 +62,11 @@ internal sealed class OpenLogFileView : IView
                     .ConfigureAwait(false)
             )
             {
-                if (task.Result is not null)
+                var result = await task.ConfigureAwait(false);
+                if (result is not null)
                 {
                     console.WriteLine(
-                        $"[{Colors.Success}]Opened file {task.Result.EscapeMarkup()} successfully[/]"
+                        $"[{Colors.Success}]Opened file {result.EscapeMarkup()} successfully[/]"
                     );
                 }
             }

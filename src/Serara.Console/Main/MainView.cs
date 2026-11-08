@@ -8,6 +8,7 @@ namespace Serara.Console;
 internal sealed class MainView : IView
 {
     public static readonly ViewId Id = new(nameof(MainView));
+    public static readonly ViewPresentation Presentation = new("Search logs", Colors.Blue);
 
     private readonly IViewManager _viewManager;
     private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -39,7 +40,7 @@ internal sealed class MainView : IView
 
     public async Task Start(CancellationToken cancellationToken)
     {
-        _viewManager.RegisterView(Id);
+        _viewManager.RegisterView(Id, Presentation);
 
         using var serviceScope = _serviceScopeFactory.CreateAsyncScope();
 
@@ -54,10 +55,10 @@ internal sealed class MainView : IView
 
         using var viewCancellationTokenSource = new CancellationTokenSource();
 
-        _viewManager.RegisterView(HelpView.Id);
+        _viewManager.RegisterView(HelpView.Id, HelpView.Presentation);
         var helpViewTask = _helpView.Start(viewCancellationTokenSource.Token);
 
-        _viewManager.RegisterView(FileExplorerView.Id);
+        _viewManager.RegisterView(FileExplorerView.Id, FileExplorerView.Presentation);
         var fileExplorerViewTask = _fileExplorerView.Start(viewCancellationTokenSource.Token);
 
         var console = serviceProvider.GetRequiredService<IMultiViewConsole>();
@@ -91,8 +92,8 @@ internal sealed class MainView : IView
         var searchOptions = await RetrieveSearch(consoleInput, searchWorkflows)
             .ConfigureAwait(false);
 
-        _viewManager.RegisterView(SearchRunView.Id);
-        _viewManager.RegisterView(SearchResultsView.Id);
+        _viewManager.RegisterView(SearchRunView.Id, SearchRunView.Presentation);
+        _viewManager.RegisterView(SearchResultsView.Id, SearchResultsView.Presentation);
 
         var searchRunViewTask = _searchRunView.Start(viewCancellationTokenSource.Token);
         var resultsViewTask = _resultsView.Start(viewCancellationTokenSource.Token);

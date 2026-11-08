@@ -6,6 +6,7 @@ namespace Serara.Console;
 internal sealed class SearchResultsView : IView
 {
     public static readonly ViewId Id = new(nameof(SearchResultsView));
+    public static readonly ViewPresentation Presentation = new("Search results", Colors.Blue);
 
     private readonly ILogger<SearchResultsView> _logger;
     private readonly SearchResultsChannel _resultsChannel;
@@ -39,7 +40,7 @@ internal sealed class SearchResultsView : IView
         var consoleInput = serviceProvider.GetRequiredService<IConsoleInput>();
         var console = serviceProvider.GetRequiredService<IMultiViewConsole>();
 
-        _viewManager.RegisterView(OpenLogFileView.Id);
+        _viewManager.RegisterView(OpenLogFileView.Id, OpenLogFileView.Presentation);
 
         var openLogFileViewTask = _openLogFileView.Start(cancellationToken);
 

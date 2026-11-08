@@ -195,7 +195,7 @@ internal sealed class ViewManager : IViewManager, IDisposable
             }
             _activeView.Id = _viewIdList.FirstOrDefault(x => x == viewId) ?? _activeView.Id;
 
-            AnsiConsole.Clear();
+            ClearScreen();
 
             // Pending output is already retained in each view's history.
             while (_bufferChannel.Reader.TryRead(out _)) { }
@@ -259,7 +259,7 @@ internal sealed class ViewManager : IViewManager, IDisposable
         return _viewMap.ContainsKey(viewId);
     }
 
-    public void RegisterView(ViewId viewId)
+    public void RegisterView(ViewId viewId, ViewPresentation presentation)
     {
         lock (_consoleLock)
         {
@@ -271,9 +271,15 @@ internal sealed class ViewManager : IViewManager, IDisposable
             }
 
             _viewIdList.Add(viewId);
-            _viewMap.TryAdd(viewId, new ViewData(viewId));
+            _viewMap.TryAdd(viewId, new ViewData(viewId, presentation));
 
-            _activeView ??= new ActiveView { Id = viewId };
+            if (_activeView is null)
+            {
+                _activeView = new ActiveView { Id = viewId };
+                QueueBufferItem(
+                    new CallbackBufferChannelItem { ViewId = viewId, Callback = WriteHeading }
+                );
+            }
         }
 
         _startEvent.Release();
@@ -305,6 +311,26 @@ internal sealed class ViewManager : IViewManager, IDisposable
                 _pendingOutputItems = 0;
                 AnsiConsole.Clear();
             }
+        }
+    }
+
+    private void WriteHeading()
+    {
+        if (_activeView is not null && _viewMap.TryGetValue(_activeView.Id, out var view))
+        {
+            var presentation = view.Presentation;
+            AnsiConsole.MarkupLine(
+                $"[{presentation.AccentColor}]── {presentation.Title.EscapeMarkup()} ──[/]"
+            );
+        }
+    }
+
+    private void ClearScreen()
+    {
+        lock (_consoleLock)
+        {
+            AnsiConsole.Clear();
+            WriteHeading();
         }
     }
 
@@ -356,7 +382,7 @@ internal sealed class ViewManager : IViewManager, IDisposable
                             AnsiConsole.Write(x.Renderable);
                             break;
                         case ClearBufferChannelItem:
-                            AnsiConsole.Clear();
+                            ClearScreen();
                             break;
                         default:
                             break;
@@ -415,7 +441,7 @@ internal sealed class ViewManager : IViewManager, IDisposable
                     && action is RefreshCustomAction
                 )
                 {
-                    AnsiConsole.Clear();
+                    ClearScreen();
                     (promptResult, value, action) = item.PromptFunc();
                 }
 
@@ -431,7 +457,7 @@ internal sealed class ViewManager : IViewManager, IDisposable
                                 eventAction.Event
                             )
                         );
-                    AnsiConsole.Clear();
+                    ClearScreen();
                     (promptResult, value, action) = item.PromptFunc();
                 }
 

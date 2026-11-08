@@ -1,0 +1,13 @@
+[
+  {
+    "Name": "Local debug app",
+    "TeamName": "Local development",
+    "UK": "LOCAL",
+    "ACI": "LOCAL-DEBUG",
+    "LogPath": "DebugApp",
+    "SearchTerm": "Local debug app",
+    "Servers": ["LOCALHOST"],
+    "LogSearchPattern": "*.log",
+    "ArchiveDirectoryName": "DebugApp"
+  }
+]

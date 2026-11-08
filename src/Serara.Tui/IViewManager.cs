@@ -4,7 +4,7 @@ public interface IViewManager
 {
     Task Start(CancellationToken cancellationToken);
     ViewId GetActiveViewId();
-    void RegisterView(ViewId viewId);
+    void RegisterView(ViewId viewId, ViewPresentation presentation);
     void NavigateToView(ViewId viewId);
     void NavigateToViewIfActive(ViewId viewId, ViewId viewIdToSwitchTo);
     void UnregisterView(ViewId viewId);

@@ -23,7 +23,7 @@ internal sealed class WinServerFileExplorerAction : IInteractiveAction
     }
 
     public string Id => "win-server-file-explorer";
-    public string DisplayName => "File explorer";
+    public string DisplayName => "Browse files";
 
     public async Task Execute(CancellationToken cancellationToken)
     {

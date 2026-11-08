@@ -5,6 +5,7 @@ namespace Serara.Console;
 internal sealed class HelpView : IView
 {
     public static readonly ViewId Id = new(nameof(HelpView));
+    public static readonly ViewPresentation Presentation = new("Help", Colors.Gray);
 
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly KeyBindingSet _bindings;
@@ -27,11 +28,16 @@ internal sealed class HelpView : IView
 
         console.WriteLine(
             $"""
-            [{Colors.Title}]Help View[/]
-            {_bindings[KeyBindingAction.HelpView].ToDisplayString()} -> Help View
-            {_bindings[KeyBindingAction.MainView].ToDisplayString()} -> Main View
-            {_bindings[KeyBindingAction.FileExplorerView].ToDisplayString()} -> File Explorer View
-            {_bindings[KeyBindingAction.OpenLogView].ToDisplayString()} -> Open Log View
+            {_bindings[KeyBindingAction.HelpView].ToDisplayString()} -> {Presentation.Title}
+            {_bindings[
+                KeyBindingAction.MainView
+            ].ToDisplayString()} -> {MainView.Presentation.Title}
+            {_bindings[
+                KeyBindingAction.FileExplorerView
+            ].ToDisplayString()} -> {FileExplorerView.Presentation.Title}
+            {_bindings[
+                KeyBindingAction.OpenLogView
+            ].ToDisplayString()} -> {OpenLogFileView.Presentation.Title}
             {_bindings[KeyBindingAction.PreviousView].ToDisplayString()} -> Previous View
             {_bindings[KeyBindingAction.NextView].ToDisplayString()} -> Next View
             {_bindings[KeyBindingAction.Cancel].ToDisplayString()} -> Cancel / Back

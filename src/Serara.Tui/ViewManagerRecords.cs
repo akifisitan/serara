@@ -108,14 +108,16 @@ internal sealed class ClearBufferChannelItem : BufferChannelItem;
 internal sealed class ViewData
 {
     public ViewId ViewId { get; }
+    public ViewPresentation Presentation { get; }
     public List<BufferChannelItem> ConsoleBuffer { get; }
     public Channel<InternalPromptResultRecord<object>> PromptResultChannel { get; }
     public Channel<CustomPromptEventResult<ICustomPromptEvent>> CustomResultChannel { get; }
     public Channel<IViewMessage> ViewMessageChannel { get; }
 
-    public ViewData(ViewId viewId)
+    public ViewData(ViewId viewId, ViewPresentation presentation)
     {
         ViewId = viewId;
+        Presentation = presentation;
         PromptResultChannel = Channel.CreateUnbounded<InternalPromptResultRecord<object>>(
             new UnboundedChannelOptions { SingleReader = false, SingleWriter = false }
         );
@@ -140,6 +142,8 @@ internal sealed class ActiveView
 }
 
 public sealed record ViewId(string Value);
+
+public sealed record ViewPresentation(string Title, string AccentColor);
 
 public interface IKeyRegistrationMapping
 {

@@ -5,6 +5,7 @@ namespace Serara.Console;
 internal sealed class SearchRunView : IView
 {
     public static readonly ViewId Id = new(nameof(SearchRunView));
+    public static readonly ViewPresentation Presentation = new("Search progress", Colors.Blue);
 
     private readonly IViewManager _viewManager;
     private readonly IServiceScopeFactory _serviceScopeFactory;

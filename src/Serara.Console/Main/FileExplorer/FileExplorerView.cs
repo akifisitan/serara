@@ -5,6 +5,7 @@ namespace Serara.Console;
 internal sealed class FileExplorerView : IView
 {
     public static readonly ViewId Id = new(nameof(FileExplorerView));
+    public static readonly ViewPresentation Presentation = new("Browse files", Colors.Teal);
 
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
