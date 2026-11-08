@@ -11,13 +11,17 @@ internal sealed class SearchRunOrchestrator
     private readonly ITimeProvider _timeProvider;
     private readonly IMultiViewConsole _console;
     private readonly SearchResultsChannel _resultsChannel;
+    private readonly IViewManager _viewManager;
+    private readonly KeyRegistrations _keyRegistrations;
 
     public SearchRunOrchestrator(
         ILogger<SearchRunOrchestrator> logger,
         ISearchRun searchRun,
         ITimeProvider timeProvider,
         IMultiViewConsole console,
-        SearchResultsChannel resultsChannel
+        SearchResultsChannel resultsChannel,
+        IViewManager viewManager,
+        KeyRegistrations keyRegistrations
     )
     {
         _logger = logger;
@@ -25,6 +29,8 @@ internal sealed class SearchRunOrchestrator
         _timeProvider = timeProvider;
         _console = console;
         _resultsChannel = resultsChannel;
+        _viewManager = viewManager;
+        _keyRegistrations = keyRegistrations;
     }
 
     public async Task<SearchRunFinishedEvent> RunSearch(
@@ -32,28 +38,22 @@ internal sealed class SearchRunOrchestrator
         CancellationToken cancellationToken
     )
     {
-        using var ctrlCCancellationTokenSource = new CancellationTokenSource();
         using var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
-            cancellationToken,
-            ctrlCCancellationTokenSource.Token
+            cancellationToken
         );
         var cancelled = 0;
         var runId = _timeProvider.LocalNow().ToString("yyyyMMddHHmmssfff");
 
         _resultsChannel.Reset();
 
-        SearchRunResult result;
-        try
-        {
-            System.Console.CancelKeyPress += CancelQuery;
-            result = await _searchRun
-                .Execute(searchOptions, runId, linkedCancellationTokenSource.Token)
-                .ConfigureAwait(false);
-        }
-        finally
-        {
-            System.Console.CancelKeyPress -= CancelQuery;
-        }
+        using var cancelRegistration = _viewManager.RegisterKeyHandler(
+            SearchRunView.Id,
+            _keyRegistrations.CancelPress,
+            CancelQuery
+        );
+        var result = await _searchRun
+            .Execute(searchOptions, runId, linkedCancellationTokenSource.Token)
+            .ConfigureAwait(false);
 
         return new SearchRunFinishedEvent(
             result.Outcome.CompletionMode,
@@ -61,16 +61,14 @@ internal sealed class SearchRunOrchestrator
             result.ResultLimitReached
         );
 
-        void CancelQuery(object? sender, ConsoleCancelEventArgs e)
+        void CancelQuery()
         {
-            e.Cancel = true;
-
             if (Interlocked.Exchange(ref cancelled, 1) == 1)
             {
                 return;
             }
 
-            ctrlCCancellationTokenSource.Cancel();
+            linkedCancellationTokenSource.Cancel();
 
             _logger.ZLogInformation($"[{runId}] Query cancellation requested");
 

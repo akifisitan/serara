@@ -10,6 +10,7 @@ internal sealed class ViewManager : IViewManager, IDisposable
 
     private readonly ConcurrentDictionary<ViewId, ViewData> _viewMap = [];
     private readonly List<ViewId> _viewIdList = [];
+    private readonly List<KeyHandlerRegistration> _keyHandlers = [];
 
     private readonly Lock _consoleLock = new();
     private readonly SemaphoreSlim _startEvent = new(0);
@@ -17,14 +18,25 @@ internal sealed class ViewManager : IViewManager, IDisposable
     private const int MaxPendingOutputItems = 2_000;
     private int _pendingOutputItems;
 
-    private readonly IKeyRegistrationMapping _registrationMapping;
-
     private readonly ILogger<ViewManager> _logger;
 
     public ViewManager(ILogger<ViewManager> logger, IKeyRegistrationMapping registrationMapping)
     {
         _logger = logger;
-        _registrationMapping = registrationMapping;
+        RegisterKeyHandler(
+            null,
+            new CustomKeyPress("NextView", registrationMapping.MoveNextPressed),
+            () => HandleViewNavigation(isNext: true)
+        );
+        RegisterKeyHandler(
+            null,
+            new CustomKeyPress("PreviousView", registrationMapping.MovePrevPressed),
+            () => HandleViewNavigation(isNext: false)
+        );
+        foreach (var (viewId, keyPress) in registrationMapping.NavigationMapping)
+        {
+            RegisterKeyHandler(null, keyPress, () => NavigateToView(viewId));
+        }
     }
 
     private readonly Channel<BufferChannelItem> _bufferChannel =
@@ -146,23 +158,17 @@ internal sealed class ViewManager : IViewManager, IDisposable
             {
                 continue;
             }
-            if (_registrationMapping.MoveNextPressed(key))
+            lock (_consoleLock)
             {
-                HandleViewNavigation(isNext: true);
-            }
-            else if (_registrationMapping.MovePrevPressed(key))
-            {
-                HandleViewNavigation(isNext: false);
-            }
-            else
-            {
-                foreach (var (viewId, (_, func)) in _registrationMapping.NavigationMapping)
+                if (_activeView is null)
                 {
-                    if (func(key))
-                    {
-                        NavigateToView(viewId);
-                    }
+                    continue;
                 }
+
+                var registration = _keyHandlers.FirstOrDefault(x =>
+                    (x.ViewId is null || x.ViewId == _activeView.Id) && x.KeyPress.Func(key)
+                );
+                registration?.Handler();
             }
         }
     }
@@ -172,6 +178,54 @@ internal sealed class ViewManager : IViewManager, IDisposable
         lock (_consoleLock)
         {
             return _activeView?.Id ?? throw new InvalidOperationException("No view is registered.");
+        }
+    }
+
+    public IDisposable RegisterKeyHandler(ViewId? viewId, CustomKeyPress keyPress, Action handler)
+    {
+        lock (_consoleLock)
+        {
+            var registration = new KeyHandlerRegistration(this, viewId, keyPress, handler);
+            if (viewId is null)
+            {
+                _keyHandlers.Add(registration);
+            }
+            else
+            {
+                // View-specific actions take precedence over global shortcuts.
+                _keyHandlers.Insert(0, registration);
+            }
+            return registration;
+        }
+    }
+
+    private sealed class KeyHandlerRegistration : IDisposable
+    {
+        private readonly ViewManager _manager;
+
+        public KeyHandlerRegistration(
+            ViewManager manager,
+            ViewId? viewId,
+            CustomKeyPress keyPress,
+            Action handler
+        )
+        {
+            _manager = manager;
+            ViewId = viewId;
+            KeyPress = keyPress;
+            Handler = handler;
+        }
+
+        public ViewId? ViewId { get; }
+        public CustomKeyPress KeyPress { get; }
+        public Action Handler { get; }
+
+        public void Dispose()
+        {
+            lock (_manager._consoleLock)
+            {
+                _manager._keyHandlers.Remove(this);
+            }
         }
     }
 
@@ -295,6 +349,7 @@ internal sealed class ViewManager : IViewManager, IDisposable
             }
 
             _viewIdList.Remove(viewId);
+            _keyHandlers.RemoveAll(x => x.ViewId == viewId);
             if (_activeView.Id != viewId)
             {
                 return;

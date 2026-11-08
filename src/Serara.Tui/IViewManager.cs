@@ -5,6 +5,7 @@ public interface IViewManager
     Task Start(CancellationToken cancellationToken);
     ViewId GetActiveViewId();
     void RegisterView(ViewId viewId, ViewPresentation presentation);
+    IDisposable RegisterKeyHandler(ViewId? viewId, CustomKeyPress keyPress, Action handler);
     void NavigateToView(ViewId viewId);
     void NavigateToViewIfActive(ViewId viewId, ViewId viewIdToSwitchTo);
     void UnregisterView(ViewId viewId);

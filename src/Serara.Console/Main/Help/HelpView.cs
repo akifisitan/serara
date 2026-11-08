@@ -45,7 +45,10 @@ internal sealed class HelpView : IView
             {Shortcut(KeyBindingAction.NextView, "Next view")}
 
             [bold]Context-specific actions[/]
-            {Shortcut(KeyBindingAction.Cancel, "Cancel / back, where supported")}
+            {Shortcut(
+                KeyBindingAction.Cancel,
+                "Cancel search on Search progress / back, where supported"
+            )}
             {Shortcut(KeyBindingAction.RefreshResults, "Refresh search results")}
             {Shortcut(KeyBindingAction.OpenInExplorer, "Open in Explorer, in file browsing")}
             """
