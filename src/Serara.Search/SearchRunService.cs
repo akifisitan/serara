@@ -9,7 +9,10 @@ public sealed record SearchRunFailure(
     string? DiscoveryPath = null
 );
 
-public sealed record SearchRunOutcome(bool IsCancelled, IReadOnlyList<SearchRunFailure> Failures)
+public sealed record SearchRunOutcome(
+    SearchCompletionMode CompletionMode,
+    IReadOnlyList<SearchRunFailure> Failures
+)
 {
     public int FailureCount => Failures.Count;
 }
@@ -44,12 +47,12 @@ public sealed class SearchRunService : ISearchRunService
 
         if (cancellationToken.IsCancellationRequested)
         {
-            return new SearchRunOutcome(true, failures.ToArray());
+            return new SearchRunOutcome(SearchCompletionMode.Cancelled, failures.ToArray());
         }
 
         try
         {
-            await _searchExecutor
+            var completionMode = await _searchExecutor
                 .Execute(
                     request,
                     publish,
@@ -59,6 +62,7 @@ public sealed class SearchRunService : ISearchRunService
                     cancellationToken
                 )
                 .ConfigureAwait(false);
+            return new SearchRunOutcome(completionMode, failures.ToArray());
         }
         catch (OperationCanceledException ex)
             when (cancellationToken.IsCancellationRequested
@@ -67,13 +71,18 @@ public sealed class SearchRunService : ISearchRunService
                 )
             )
         {
-            return new SearchRunOutcome(true, failures.ToArray());
+            return new SearchRunOutcome(SearchCompletionMode.Cancelled, failures.ToArray());
         }
         catch (Exception ex)
         {
             failures.Enqueue(new SearchRunFailure(ex, null));
         }
 
-        return new SearchRunOutcome(cancellationToken.IsCancellationRequested, failures.ToArray());
+        return new SearchRunOutcome(
+            cancellationToken.IsCancellationRequested
+                ? SearchCompletionMode.Cancelled
+                : SearchCompletionMode.Completed,
+            failures.ToArray()
+        );
     }
 }

@@ -1,4 +1,5 @@
 using Serara.History;
+using Serara.Search;
 using Serara.Tui;
 using Spectre.Console;
 
@@ -217,7 +218,10 @@ internal sealed class MainView : IView
         console.WriteLine($"[{Colors.Title}]Started search run with the following parameters:[/]");
         console.WriteLine(searchOptions.Display);
         console.WriteLine(
-            searchRunFinishedEvent.IsCancelled ? $"[{Colors.Error}]Search run cancelled[/]"
+            searchRunFinishedEvent.CompletionMode == SearchCompletionMode.Cancelled
+                ? $"[{Colors.Error}]Search run cancelled[/]"
+            : searchRunFinishedEvent.CompletionMode == SearchCompletionMode.StoppedAfterFirstMatch
+                ? $"[{Colors.Success}]Search stopped after first match[/]"
             : searchRunFinishedEvent.FailureCount > 0
                 ? $"[{Colors.Yellow}]Search run finished with errors. Results may be incomplete.[/]"
             : $"[{Colors.Success}]Search run complete[/]"

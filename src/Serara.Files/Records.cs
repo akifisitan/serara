@@ -57,8 +57,8 @@ public sealed record SearchZipFileEntryFinished(
 public enum SearchFileFinishReason
 {
     EndOfFile = 0,
-    EarlyExitContinueSearchingInLogFileAfterFirstResultIsFalse = 1,
-    EarlyExitStopSearchingOtherFilesInZipAfterFirstResultIsTrue = 2,
+    StoppedFileAfterFirstMatch = 1,
+    StoppedZipAfterFirstMatchingEntry = 2,
 }
 
 public sealed record ZipArchiveEntryReport(
@@ -88,8 +88,8 @@ public sealed record ZipArchiveEntryWrapper(
 
 public sealed record ZipFileSearchOptions
 {
-    public bool StopSearchingOtherFilesInZipAfterFirstResult { get; set; }
-    public bool ContinueSearchingInLogFileAfterFirstResult { get; set; }
+    public bool StopZipAfterFirstMatchingEntry { get; set; }
+    public bool StopFileAfterFirstMatch { get; set; } = true;
     public int StreamReaderBufferSize { get; set; } = 1024;
     public int CreationTimeBufferInSeconds { get; set; } = 5;
 }
@@ -104,7 +104,7 @@ public sealed class ZipFileSearchOptionsValidator : AbstractValidator<ZipFileSea
 
 public sealed record FileSearchOptions
 {
-    public bool ContinueSearchingInLogFileAfterFirstResult { get; set; }
+    public bool StopFileAfterFirstMatch { get; set; } = true;
     public int StreamReaderBufferSize { get; set; } = 1024;
     public int FileStreamBufferSize { get; set; } = 4096;
 }

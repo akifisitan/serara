@@ -60,13 +60,13 @@ public sealed class FileSearcher
                     LineContent = line,
                 };
 
-                if (!_options.ContinueSearchingInLogFileAfterFirstResult)
+                if (_options.StopFileAfterFirstMatch)
                 {
                     progress?.Invoke(
                         new SearchFileFinished(
                             fileEntry.FilePath,
                             tsReadStart.GetElapsedTotalMs(),
-                            SearchFileFinishReason.EarlyExitContinueSearchingInLogFileAfterFirstResultIsFalse
+                            SearchFileFinishReason.StoppedFileAfterFirstMatch
                         )
                     );
 

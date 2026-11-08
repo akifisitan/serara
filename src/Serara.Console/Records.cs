@@ -1,10 +1,11 @@
 using Serara.Core.Search;
+using Serara.Search;
 using Serara.Tui;
 
 namespace Serara.Console;
 
 internal sealed record SearchRunFinishedEvent(
-    bool IsCancelled,
+    SearchCompletionMode CompletionMode,
     int FailureCount,
     bool ResultLimitReached
 ) : IViewMessage;

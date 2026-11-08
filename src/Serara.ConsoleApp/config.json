@@ -5,6 +5,7 @@
     }
   },
   "SeraraConsoleAppOptions": {
+    "StopSearchAfterFirstMatch": false,
     "NumConcurrentSearchOperations": 4
   },
   "SeraraHistoryOptions": {
@@ -29,11 +30,11 @@
   },
   "SearchOptions": {
     "FileSearchOptions": {
-      "ContinueSearchingInLogFileAfterFirstResult": false
+      "StopFileAfterFirstMatch": true
     },
     "ZipFileSearchOptions": {
-      "ContinueSearchingInLogFileAfterFirstResult": false,
-      "StopSearchingOtherFilesInZipAfterFirstResult": false
+      "StopFileAfterFirstMatch": true,
+      "StopZipAfterFirstMatchingEntry": false
     }
   }
 }

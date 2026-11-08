@@ -6,7 +6,7 @@ namespace Serara.Search;
 
 public interface ISearchExecutor
 {
-    Task Execute(
+    Task<SearchCompletionMode> Execute(
         ISearchRequest request,
         Func<ModuleSearchResult, CancellationToken, ValueTask> publish,
         Action<ModuleSearchProgress> progress,
@@ -26,7 +26,7 @@ internal sealed class SearchExecutor : ISearchExecutor
         _options = options.Value;
     }
 
-    public async Task Execute(
+    public async Task<SearchCompletionMode> Execute(
         ISearchRequest request,
         Func<ModuleSearchResult, CancellationToken, ValueTask> publish,
         Action<ModuleSearchProgress> progress,
@@ -34,6 +34,9 @@ internal sealed class SearchExecutor : ISearchExecutor
         CancellationToken cancellationToken
     )
     {
+        using var searchCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken
+        );
         var backend = _registry.Get(request);
         var channel = Channel.CreateBounded<SearchWorkItem>(
             new BoundedChannelOptions(
@@ -46,29 +49,45 @@ internal sealed class SearchExecutor : ISearchExecutor
             }
         );
 
-        var producer = Produce(
+        var tasks = new Task[_options.NumConcurrentSearchOperations + 1];
+        tasks[0] = Produce(
             backend,
             request,
             channel.Writer,
             progress,
             failure,
-            cancellationToken
+            searchCancellation.Token
         );
-        var consumers = Enumerable
-            .Range(0, _options.NumConcurrentSearchOperations)
-            .Select(_ =>
-                Consume(
-                    backend,
-                    request,
-                    channel.Reader,
-                    publish,
-                    progress,
-                    failure,
-                    cancellationToken
-                )
+        for (var i = 1; i < tasks.Length; i++)
+        {
+            tasks[i] = Consume(
+                backend,
+                request,
+                channel.Reader,
+                publish,
+                progress,
+                failure,
+                searchCancellation.CancelAsync,
+                searchCancellation.Token
             );
+        }
 
-        await Task.WhenAll(consumers.Prepend(producer)).ConfigureAwait(false);
+        try
+        {
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException ex)
+            when (searchCancellation.IsCancellationRequested
+                && (
+                    ex.CancellationToken == searchCancellation.Token
+                    || !ex.CancellationToken.CanBeCanceled
+                )
+            ) { }
+
+        cancellationToken.ThrowIfCancellationRequested();
+        return searchCancellation.IsCancellationRequested
+            ? SearchCompletionMode.StoppedAfterFirstMatch
+            : SearchCompletionMode.Completed;
     }
 
     private static async Task Produce(
@@ -106,18 +125,20 @@ internal sealed class SearchExecutor : ISearchExecutor
         }
     }
 
-    private static async Task Consume(
+    private async Task Consume(
         ISearchBackend backend,
         ISearchRequest request,
         ChannelReader<SearchWorkItem> reader,
         Func<ModuleSearchResult, CancellationToken, ValueTask> publish,
         Action<ModuleSearchProgress> progress,
         Action<Exception, SearchWorkItem?, string?> failure,
+        Func<Task> stopSearch,
         CancellationToken cancellationToken
     )
     {
         await foreach (var item in reader.ReadAllAsync(cancellationToken).ConfigureAwait(false))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             try
             {
                 await foreach (
@@ -127,6 +148,11 @@ internal sealed class SearchExecutor : ISearchExecutor
                 )
                 {
                     await publish(result, cancellationToken).ConfigureAwait(false);
+                    if (_options.StopSearchAfterFirstMatch)
+                    {
+                        await stopSearch().ConfigureAwait(false);
+                        break;
+                    }
                 }
             }
             catch (Exception ex) when (ex is not OperationCanceledException)

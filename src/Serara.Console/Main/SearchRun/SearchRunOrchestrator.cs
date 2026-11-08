@@ -56,7 +56,7 @@ internal sealed class SearchRunOrchestrator
         }
 
         return new SearchRunFinishedEvent(
-            result.Outcome.IsCancelled,
+            result.Outcome.CompletionMode,
             result.Outcome.FailureCount,
             result.ResultLimitReached
         );

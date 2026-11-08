@@ -91,10 +91,9 @@ public sealed class ZipFileSearcher
                         LineContent = line,
                     };
 
-                    if (!_options.ContinueSearchingInLogFileAfterFirstResult)
+                    if (_options.StopFileAfterFirstMatch)
                     {
-                        finishReason =
-                            SearchFileFinishReason.EarlyExitContinueSearchingInLogFileAfterFirstResultIsFalse;
+                        finishReason = SearchFileFinishReason.StoppedFileAfterFirstMatch;
                         break;
                     }
                 }
@@ -108,13 +107,13 @@ public sealed class ZipFileSearcher
                 )
             );
 
-            if (foundMatch && _options.StopSearchingOtherFilesInZipAfterFirstResult)
+            if (foundMatch && _options.StopZipAfterFirstMatchingEntry)
             {
                 progress?.Invoke(
                     new SearchFileFinished(
                         fileEntry.FilePath,
                         tsStart.GetElapsedTotalMs(),
-                        SearchFileFinishReason.EarlyExitStopSearchingOtherFilesInZipAfterFirstResultIsTrue
+                        SearchFileFinishReason.StoppedZipAfterFirstMatchingEntry
                     )
                 );
                 yield break;
