@@ -71,7 +71,9 @@ internal sealed class SearchRun : ISearchRun
                     return ValueTask.CompletedTask;
                 },
                 progress =>
-                    _console.WriteLine($"[{Colors.Log}]{progress.DisplayName.EscapeMarkup()}[/]"),
+                    _console.WriteLine(
+                        $"[{Colors.Log}]{FormatProgress(progress).EscapeMarkup()}[/]"
+                    ),
                 cancellationToken
             )
             .ConfigureAwait(false);
@@ -86,6 +88,20 @@ internal sealed class SearchRun : ISearchRun
 
         return new SearchRunResult(outcome, Volatile.Read(ref resultLimitReached) != 0);
     }
+
+    private static string FormatProgress(ModuleSearchProgress progress) =>
+        progress switch
+        {
+            SearchDiscoveryStarted started => $"Discovery started: {started.DisplayName}",
+            SearchDiscoveryFinished finished =>
+                $"Discovery finished: {finished.DisplayName}, {finished.ItemCount} files found in {finished.Elapsed.TotalSeconds:F1}s",
+            SearchWorkStarted started => $"Search started: {started.DisplayName}",
+            SearchWorkHeartbeat heartbeat =>
+                $"Still searching: {heartbeat.DisplayName}, {heartbeat.Elapsed.TotalSeconds:F1}s elapsed",
+            SearchWorkFinished finished =>
+                $"Search finished: {finished.DisplayName}, {finished.Elapsed.TotalSeconds:F1}s elapsed",
+            _ => progress.DisplayName,
+        };
 }
 
 internal sealed record SearchRunResult(SearchRunOutcome Outcome, bool ResultLimitReached);
