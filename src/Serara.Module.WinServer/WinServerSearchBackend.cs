@@ -204,8 +204,7 @@ public sealed class WinServerSearchBackend
     )
     {
         var entry = source.Entry;
-        var path =
-            FindCurrentLogPath(entry, cancellationToken)
+        var path = FindCurrentLogPath(entry, cancellationToken)
             ?? throw new FileNotFoundException(
                 "Could not locate the log after rotation.",
                 entry.FilePath

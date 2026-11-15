@@ -110,16 +110,13 @@ internal sealed class SearchHistoryStore : ISearchHistoryStore, IDisposable
         try
         {
             using var stream = File.OpenRead(_filePath);
-            var entries =
-                await JsonSerializer
-                    .DeserializeAsync(
-                        stream,
-                        SearchHistoryJsonSerializerContext
-                            .Default
-                            .DictionaryStringSearchHistoryEntry,
-                        cancellationToken
-                    )
-                    .ConfigureAwait(false)
+            var entries = await JsonSerializer
+                .DeserializeAsync(
+                    stream,
+                    SearchHistoryJsonSerializerContext.Default.DictionaryStringSearchHistoryEntry,
+                    cancellationToken
+                )
+                .ConfigureAwait(false)
                 ?? throw new JsonException("Search history must contain an object.");
 
             foreach (var entry in entries)
@@ -136,8 +133,8 @@ internal sealed class SearchHistoryStore : ISearchHistoryStore, IDisposable
 
     private async Task Store(CancellationToken cancellationToken)
     {
-        var filePath =
-            _filePath ?? throw new InvalidOperationException("History is not initialized.");
+        var filePath = _filePath
+            ?? throw new InvalidOperationException("History is not initialized.");
         var temporaryFilePath = Path.Combine(
             Path.GetDirectoryName(filePath)!,
             $"{Guid.NewGuid():N}.tmp"

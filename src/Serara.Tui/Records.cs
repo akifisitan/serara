@@ -34,8 +34,7 @@ public sealed class ViewContext : IViewContext
             field
             ?? throw new InvalidOperationException($"Must set {nameof(ViewId)} before accessing");
         set =>
-            field =
-                value
+            field = value
                 ?? throw new InvalidOperationException(
                     $"{nameof(ViewContext)} has already been initialized"
                 );

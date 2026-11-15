@@ -281,8 +281,7 @@ internal sealed class SearchOptionsWorkflow
         CancellationToken cancellationToken
     )
     {
-        var application =
-            draft.Application
+        var application = draft.Application
             ?? throw new InvalidOperationException(
                 "Select an application before selecting servers."
             );
@@ -302,8 +301,7 @@ internal sealed class SearchOptionsWorkflow
         CancellationToken cancellationToken
     )
     {
-        var application =
-            draft.Application
+        var application = draft.Application
             ?? throw new InvalidOperationException(
                 "Select an application before selecting a search strategy."
             );

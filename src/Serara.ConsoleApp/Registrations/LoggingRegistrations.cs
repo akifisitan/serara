@@ -54,14 +54,11 @@ internal static class LoggingRegistrations
         {
             x.ClearProviders()
                 .AddConfiguration(configuration.GetSection("Logging"))
-                .AddZLoggerFile(
-                    logFileName,
-                    options =>
-                    {
-                        options.CaptureThreadInfo = true;
-                        options.UsePlainTextFormatter(ConfigureFormatter);
-                    }
-                );
+                .AddZLoggerFile(logFileName, options =>
+                {
+                    options.CaptureThreadInfo = true;
+                    options.UsePlainTextFormatter(ConfigureFormatter);
+                });
 
             static void ConfigureFormatter(PlainTextZLoggerFormatter formatter)
             {

@@ -28,18 +28,15 @@ public static class WinServerConfluenceRegistrations
     private static IServiceCollection AddConfluenceHttpClient(this IServiceCollection services)
     {
         services
-            .AddHttpClient(
-                ConfluenceHttpClientFactory.ClientName,
-                (sp, client) =>
-                {
-                    var options = sp.GetRequiredService<
-                        IOptions<ConfluenceHttpClientFactoryOptions>
-                    >().Value;
+            .AddHttpClient(ConfluenceHttpClientFactory.ClientName, (sp, client) =>
+            {
+                var options = sp.GetRequiredService<
+                    IOptions<ConfluenceHttpClientFactoryOptions>
+                >().Value;
 
-                    client.BaseAddress = new Uri(options.BaseUrl);
-                    client.Timeout = TimeSpan.FromMilliseconds(options.TimeoutMs);
-                }
-            )
+                client.BaseAddress = new Uri(options.BaseUrl);
+                client.Timeout = TimeSpan.FromMilliseconds(options.TimeoutMs);
+            })
             .ConfigurePrimaryHttpMessageHandler(sp =>
             {
                 var options = sp.GetRequiredService<

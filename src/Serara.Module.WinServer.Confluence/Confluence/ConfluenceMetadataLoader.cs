@@ -96,11 +96,10 @@ public sealed partial class ConfluenceMetadataLoader : IWinApplicationMetadataLo
             .Content.ReadAsStringAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        var result =
-            JsonSerializer.Deserialize(
-                content,
-                ConfluenceJsonSerializerContext.Default.SearchResponse
-            )
+        var result = JsonSerializer.Deserialize(
+            content,
+            ConfluenceJsonSerializerContext.Default.SearchResponse
+        )
             ?? throw new JsonException(
                 $"An error occurred while deserializing {content} into {nameof(ConfluenceJsonSerializerContext.Default.SearchResponse)}"
             );
@@ -155,8 +154,8 @@ public sealed partial class ConfluenceMetadataLoader : IWinApplicationMetadataLo
                 headerMap,
                 _options.ApplicationName
             );
-            var teamName =
-                GetColumnValueFromRowData(rowData, headerMap, _options.TeamName) ?? string.Empty;
+            var teamName = GetColumnValueFromRowData(rowData, headerMap, _options.TeamName)
+                ?? string.Empty;
 
             if (
                 IsNullWhiteSpaceOrDefaultValue(uk)

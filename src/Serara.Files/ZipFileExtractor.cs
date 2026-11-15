@@ -17,8 +17,7 @@ public sealed class ZipFileEntryExtractor
 
         await using var zipArchiveScope = zipArchive.ConfigureAwait(false);
 
-        var entry =
-            zipArchive.GetEntry(entryName)
+        var entry = zipArchive.GetEntry(entryName)
             ?? throw new InvalidOperationException(
                 $"{nameof(entryName)}: {entryName} does not exist in {zipFilePath} archive"
             );
