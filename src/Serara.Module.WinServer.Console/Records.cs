@@ -13,25 +13,6 @@ internal enum SearchOptionChoice
     NewRun = 2,
 }
 
-internal enum SearchHistoryResolution
-{
-    Complete,
-    MissingApplication,
-    MissingServers,
-}
-
-internal enum SearchRequestResolution
-{
-    Complete,
-    InvalidApplication,
-    InvalidServers,
-    InvalidSearchStrategy,
-    InvalidTimeRange,
-    InvalidSearchPattern,
-    RejectedHistory,
-    RejectedNewRun,
-}
-
 internal sealed record FileTraversal(bool MoveUp, FileSystemInfo FileSystemInfo);
 
 internal sealed record LogFileExploreFilter : IFileSystemEnumerationFilter

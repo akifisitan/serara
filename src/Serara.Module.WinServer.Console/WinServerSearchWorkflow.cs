@@ -4,17 +4,17 @@ namespace Serara.Module.WinServer.Console;
 
 internal sealed class WinServerSearchWorkflow : SearchWorkflow<WinServerSearchRequest>
 {
-    private readonly RetrieveSearchOptionsStateMachine _stateMachine;
+    private readonly SearchOptionsWorkflow _options;
     private readonly SearchHistory? _history;
     private readonly ILogger<WinServerSearchWorkflow> _logger;
 
     public WinServerSearchWorkflow(
-        RetrieveSearchOptionsStateMachine stateMachine,
+        SearchOptionsWorkflow options,
         SearchHistory? history,
         ILogger<WinServerSearchWorkflow> logger
     )
     {
-        _stateMachine = stateMachine;
+        _options = options;
         _history = history;
         _logger = logger;
     }
@@ -26,7 +26,7 @@ internal sealed class WinServerSearchWorkflow : SearchWorkflow<WinServerSearchRe
         CancellationToken cancellationToken
     )
     {
-        var searchOptions = await _stateMachine.RunAsync(cancellationToken).ConfigureAwait(false);
+        var searchOptions = await _options.Run(cancellationToken).ConfigureAwait(false);
         if (_history is not null)
         {
             try

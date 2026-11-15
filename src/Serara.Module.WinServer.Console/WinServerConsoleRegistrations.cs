@@ -2,6 +2,7 @@ using Serara.Console;
 using Serara.Core.Authentication;
 using Serara.Files;
 using Serara.History;
+using Serara.Tui;
 
 namespace Serara.Module.WinServer.Console;
 
@@ -14,7 +15,7 @@ public static class WinServerConsoleRegistrations
         services.AddScoped<IConsoleInitializer>(sp => sp.GetRequiredService<MetadataProvider>());
 
         services.AddScoped<WinServerSearchWorkflow>(sp => new WinServerSearchWorkflow(
-            sp.GetRequiredService<RetrieveSearchOptionsStateMachine>(),
+            sp.GetRequiredService<SearchOptionsWorkflow>(),
             CreateSearchHistory(sp),
             sp.GetRequiredService<ILogger<WinServerSearchWorkflow>>()
         ));
@@ -24,42 +25,17 @@ public static class WinServerConsoleRegistrations
             sp.GetRequiredService<WinServerFileExplorerAction>()
         );
 
-        services.AddScoped<GetHistoryOrRunChoiceStep>(sp => new GetHistoryOrRunChoiceStep(
+        services.AddScoped<SearchOptionsWorkflow>(sp => new SearchOptionsWorkflow(
             sp.GetRequiredService<WinServerConsoleInput>(),
+            sp.GetRequiredService<IConsoleInput>(),
+            sp.GetRequiredService<IMultiViewConsole>(),
+            sp.GetRequiredService<MetadataProvider>(),
+            sp.GetRequiredService<WinServerSearchRequestPreparation>(),
             CreateSearchHistory(sp),
-            sp.GetRequiredService<ILogger<GetHistoryOrRunChoiceStep>>()
+            sp.GetRequiredService<ILogger<SearchOptionsWorkflow>>()
         ));
-        services.AddScoped<SelectFromSearchHistoryStep>(sp => new SelectFromSearchHistoryStep(
-            sp.GetRequiredService<WinServerConsoleInput>(),
-            CreateSearchHistory(sp),
-            sp.GetRequiredService<MetadataProvider>()
-        ));
-        services.AddScoped<GetApplicationStep>();
-        services.AddScoped<GetServersToSearchStep>();
-        services.AddScoped<GetServerSearchStrategyStep>();
-        services.AddScoped<GetSearchTimesStep>();
-        services.AddScoped<GetSearchPatternStep>();
-        services.AddScoped<AcceptAndStartStep>();
-        services.AddScoped<
-            BuilderStateMachine<RetrieveSearchRunOptionsStateMachineRecord, WinServerSearchRequest>
-        >();
-        services.AddScoped<RetrieveSearchOptionsStateMachine>();
-
-        services.AddScoped<GetApplicationForFileExplorerStep>();
-        services.AddScoped<GetLiveOrArchiveChoiceForFileExplorerStep>();
-        services.AddScoped<GetServerForFileExplorerStep>();
-        services.AddScoped<SelectDirectoryForFileExplorerStep>();
-        services.AddScoped<
-            BuilderStateMachine<RetrieveFileExplorerOptionsStateMachineState, Unit>
-        >();
-        services.AddScoped<RetrieveFileExplorerOptionsStateMachine>();
-
-        services.AddScoped<GetUsernameCredentialStep>();
-        services.AddScoped<GetPasswordCredentialStep>();
-        services.AddScoped<
-            BuilderStateMachine<CredentialProviderStateMachineState, BasicAuthCredential>
-        >();
-        services.AddScoped<CredentialProviderStateMachine>();
+        services.AddScoped<FileExplorerWorkflow>();
+        services.AddScoped<CredentialWorkflow>();
         services.AddScoped<IAuthenticationHandler<BasicAuthCredential>, AuthenticationHandler>();
 
         return services;

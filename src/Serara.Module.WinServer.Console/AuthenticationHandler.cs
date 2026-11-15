@@ -4,18 +4,16 @@ namespace Serara.Module.WinServer.Console;
 
 internal sealed class AuthenticationHandler : IAuthenticationHandler<BasicAuthCredential>
 {
-    private readonly CredentialProviderStateMachine _credentialProviderStateMachine;
+    private readonly CredentialWorkflow _credentials;
 
-    public AuthenticationHandler(CredentialProviderStateMachine credentialProviderStateMachine)
+    public AuthenticationHandler(CredentialWorkflow credentials)
     {
-        _credentialProviderStateMachine = credentialProviderStateMachine;
+        _credentials = credentials;
     }
 
     public async Task<BasicAuthCredential> RequestCredentials(CancellationToken cancellationToken)
     {
-        var credentials = await _credentialProviderStateMachine
-            .RunAsync(cancellationToken)
-            .ConfigureAwait(false);
+        var credentials = await _credentials.Run(cancellationToken).ConfigureAwait(false);
 
         return credentials;
     }

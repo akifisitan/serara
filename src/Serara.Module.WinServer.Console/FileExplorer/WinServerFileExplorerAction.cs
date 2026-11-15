@@ -8,17 +8,17 @@ namespace Serara.Module.WinServer.Console;
 internal sealed class WinServerFileExplorerAction : IInteractiveAction
 {
     private readonly IMultiViewConsole _console;
-    private readonly RetrieveFileExplorerOptionsStateMachine _stateMachine;
+    private readonly FileExplorerWorkflow _workflow;
     private readonly ILogger<WinServerFileExplorerAction> _logger;
 
     public WinServerFileExplorerAction(
         IMultiViewConsole console,
-        RetrieveFileExplorerOptionsStateMachine stateMachine,
+        FileExplorerWorkflow workflow,
         ILogger<WinServerFileExplorerAction> logger
     )
     {
         _console = console;
-        _stateMachine = stateMachine;
+        _workflow = workflow;
         _logger = logger;
     }
 
@@ -33,7 +33,7 @@ internal sealed class WinServerFileExplorerAction : IInteractiveAction
         {
             try
             {
-                await _stateMachine.RunAsync(cancellationToken).ConfigureAwait(false);
+                await _workflow.Run(cancellationToken).ConfigureAwait(false);
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
